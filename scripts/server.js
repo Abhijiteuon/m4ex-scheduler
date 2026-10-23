@@ -18,11 +18,13 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
+const ROOT_DIR = path.resolve(__dirname, '..');
+
 function handler(req, res) {
   let cleanUrl = req.url.split('?')[0];
   if (cleanUrl === '/' || cleanUrl === '') cleanUrl = '/index.html';
 
-  const filePath = path.join(__dirname, cleanUrl);
+  const filePath = path.join(ROOT_DIR, cleanUrl);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
