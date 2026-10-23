@@ -7,7 +7,6 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 3000;
 const MIME_TYPES = {
   '.html': 'text/html; charset=UTF-8',
   '.css': 'text/css; charset=UTF-8',
@@ -19,9 +18,9 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
-const server = http.createServer((req, res) => {
+function handler(req, res) {
   let cleanUrl = req.url.split('?')[0];
-  if (cleanUrl === '/') cleanUrl = '/index.html';
+  if (cleanUrl === '/' || cleanUrl === '') cleanUrl = '/index.html';
 
   const filePath = path.join(__dirname, cleanUrl);
   const ext = path.extname(filePath).toLowerCase();
@@ -41,11 +40,19 @@ const server = http.createServer((req, res) => {
       res.end(content, 'utf-8');
     }
   });
-});
+}
 
-server.listen(PORT, () => {
-  console.log(`\n===========================================`);
-  console.log(`  M4EX Scheduler is running!`);
-  console.log(`  URL: http://localhost:${PORT}`);
-  console.log(`===========================================\n`);
-});
+// Export for serverless environments (like Vercel)
+module.exports = handler;
+
+// Run directly in local Node environment
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  const server = http.createServer(handler);
+  server.listen(PORT, () => {
+    console.log(`\n===========================================`);
+    console.log(`  M4EX Scheduler is running!`);
+    console.log(`  URL: http://localhost:${PORT}`);
+    console.log(`===========================================\n`);
+  });
+}
