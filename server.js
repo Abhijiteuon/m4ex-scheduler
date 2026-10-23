@@ -1,6 +1,6 @@
 /**
- * Zero-dependency local web server for M4EX Scheduler
- * Run with: node server.js
+ * Universal server handler for M4EX Scheduler
+ * Works both as a standalone Node server and as a Vercel Serverless Function
  */
 
 const http = require('http');
@@ -18,13 +18,11 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
-const ROOT_DIR = path.resolve(__dirname, '..');
-
 function handler(req, res) {
   let cleanUrl = req.url.split('?')[0];
   if (cleanUrl === '/' || cleanUrl === '') cleanUrl = '/index.html';
 
-  const filePath = path.join(ROOT_DIR, cleanUrl);
+  const filePath = path.join(__dirname, cleanUrl);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
@@ -39,15 +37,15 @@ function handler(req, res) {
       }
     } else {
       res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content, 'utf-8');
+      res.end(content);
     }
   });
 }
 
-// Export for serverless environments (like Vercel)
+// Vercel Serverless Handler
 module.exports = handler;
 
-// Run directly in local Node environment
+// Standalone Server (Local / Production node)
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
   const server = http.createServer(handler);
