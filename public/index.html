@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M4EX Scheduler — Mission for Excellence</title>
+  <meta name="description" content="Generate and share formatted class schedules directly on WhatsApp for Mission for Excellence coaching institute." />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-dark">
+
+  <!-- Main Application Wrapper -->
+  <div id="app" class="app-container">
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <div class="logo-badge">
+          <span class="logo-emoji">🔸</span>
+          <div class="brand-text">
+            <span class="brand-name">M4EX</span>
+            <span class="brand-sub">Mission for Excellence</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Current Batch Pill (shown when in builder) -->
+        <div id="activeBatchPill" class="active-batch-pill hidden">
+          <span class="batch-indicator"></span>
+          <span id="activeBatchName">12th A2 batch</span>
+          <button id="btnSwitchBatch" class="btn-text-small" title="Switch Batch">Change</button>
+        </div>
+
+        <button id="btnThemeToggle" class="btn-icon" title="Toggle Theme" aria-label="Toggle dark/light mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- STEP 1: WELCOME & BATCH SELECTION SCREEN -->
+    <section id="welcomeScreen" class="screen-view welcome-view">
+      <div class="welcome-card card">
+        <div class="welcome-badge">
+          <span class="badge-icon">📅</span>
+          <span>Official Schedule Generator</span>
+        </div>
+
+        <h1 class="welcome-title">Welcome to M4EX Scheduler</h1>
+        <p class="welcome-subtitle">Mission for Excellence Coaching Institute</p>
+
+        <div class="batch-selection-box">
+          <label for="batchSelectInitial" class="form-label font-bold">
+            Choose for which batch do you want to schedule classes for:
+          </label>
+          <div class="select-wrapper">
+            <select id="batchSelectInitial" class="form-select custom-select-lg">
+              <option value="" disabled selected>Select a batch from list...</option>
+              <option value="12th A1 batch">12th A1 batch</option>
+              <option value="12th A2 batch">12th A2 batch</option>
+              <option value="11th B1 batch">11th B1 batch</option>
+              <option value="11th B2 batch">11th B2 batch</option>
+              <option value="10th C1 batch">10th C1 batch</option>
+              <option value="10th C2 batch">10th C2 batch</option>
+              <option value="9th class">9th class</option>
+              <option value="8th class">8th class</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+
+          <button id="btnProceedToBuilder" class="btn btn-primary btn-lg btn-block mt-4" disabled>
+            Continue to Schedule Maker
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+
+        <!-- Quick Demo / Features footer -->
+        <div class="welcome-footer-features">
+          <div class="feature-item">
+            <span class="feature-icon">✨</span>
+            <span>Formatted for WhatsApp</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📲</span>
+            <span>Direct 1-Click WhatsApp Share</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">⚡</span>
+            <span>Online + Offline included</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STEP 2: SCHEDULE BUILDER DASHBOARD -->
+    <section id="builderScreen" class="screen-view builder-view hidden">
+      
+      <!-- Day & Quick Settings Bar -->
+      <div class="schedule-top-bar card">
+        <div class="day-selection-group">
+          <span class="bar-label">Schedule Day:</span>
+          <div class="day-pills" id="dayPillsContainer">
+            <button type="button" class="day-pill" data-day="Monday">Mon</button>
+            <button type="button" class="day-pill" data-day="Tuesday">Tue</button>
+            <button type="button" class="day-pill" data-day="Wednesday">Wed</button>
+            <button type="button" class="day-pill" data-day="Thursday">Thu</button>
+            <button type="button" class="day-pill active" data-day="Friday">Fri</button>
+            <button type="button" class="day-pill" data-day="Saturday">Sat</button>
+            <button type="button" class="day-pill" data-day="Sunday">Sun</button>
+          </div>
+        </div>
+
+        <div class="top-bar-actions">
+          <button id="btnLoadExample" class="btn btn-outline-secondary btn-sm" title="Load sample from image">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Load Sample
+          </button>
+          <button id="btnClearSchedule" class="btn btn-outline-danger btn-sm" title="Clear all classes">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Layout: Editor & Live Preview -->
+      <div class="builder-grid">
+
+        <!-- Left Column: Add Buttons and Class List -->
+        <div class="builder-left-col">
+
+          <!-- Add Class Action Cards -->
+          <div class="add-actions-panel">
+            <button id="btnOpenCompulsoryModal" class="btn-add-action compulsory-action">
+              <div class="action-icon compulsory-icon">📘</div>
+              <div class="action-text">
+                <span class="action-title">+ Add Compulsory Class</span>
+                <span class="action-desc">Regular schedule with OFFLINE + ONLINE</span>
+              </div>
+              <span class="action-plus">+</span>
+            </button>
+
+            <button id="btnOpenExtraModal" class="btn-add-action extra-action">
+              <div class="action-icon extra-icon">⭐</div>
+              <div class="action-text">
+                <span class="action-title">+ Add Extra Class</span>
+                <span class="action-desc">Doubt class, specific topics &amp; students</span>
+              </div>
+              <span class="action-plus">+</span>
+            </button>
+
+            <button id="btnOpenTestModal" class="btn-add-action test-action">
+              <div class="action-icon test-icon">📝</div>
+              <div class="action-text">
+                <span class="action-title">+ Add Test</span>
+                <span class="action-desc">Compulsory or Optional test with topics</span>
+              </div>
+              <span class="action-plus">+</span>
+            </button>
+          </div>
+
+          <!-- Schedule Classes Container -->
+          <div class="classes-container card">
+            
+            <!-- Extra Classes Section -->
+            <div class="section-group" id="extraClassesSection">
+              <div class="section-header">
+                <div class="section-title">
+                  <span class="section-emoji">🔰</span>
+                  <h3>Extra Classes</h3>
+                  <span class="badge count-badge" id="extraCountBadge">0</span>
+                </div>
+              </div>
+              
+              <div class="class-list" id="extraClassList">
+                <!-- Dynamic cards populated via JavaScript -->
+              </div>
+              
+              <div class="empty-section-placeholder" id="extraEmptyMsg">
+                No extra classes added yet. Click "+ Add Extra Class" above.
+              </div>
+            </div>
+
+            <div class="divider-line"></div>
+
+            <!-- Compulsory Classes Section -->
+            <div class="section-group" id="compulsoryClassesSection">
+              <div class="section-header">
+                <div class="section-title">
+                  <span class="section-emoji">🔰</span>
+                  <h3>Compulsory Class</h3>
+                  <span class="badge count-badge" id="compulsoryCountBadge">0</span>
+                </div>
+              </div>
+              
+              <div class="class-list" id="compulsoryClassList">
+                <!-- Dynamic cards populated via JavaScript -->
+              </div>
+              
+              <div class="empty-section-placeholder" id="compulsoryEmptyMsg">
+                No compulsory classes added yet. Click "+ Add Compulsory Class" above.
+              </div>
+            </div>
+
+            <div class="divider-line"></div>
+
+            <!-- Tests Section -->
+            <div class="section-group" id="testsSection">
+              <div class="section-header">
+                <div class="section-title">
+                  <span class="section-emoji">🔰</span>
+                  <h3>Tests</h3>
+                  <span class="badge count-badge" id="testCountBadge">0</span>
+                </div>
+              </div>
+              
+              <div class="class-list" id="testList">
+                <!-- Dynamic cards populated via JavaScript -->
+              </div>
+              
+              <div class="empty-section-placeholder" id="testEmptyMsg">
+                No tests added yet. Click "+ Add Test" above.
+              </div>
+            </div>
+
+            <div class="divider-line"></div>
+
+            <!-- Online Mode Footer Message (Always Included) -->
+            <div class="section-group" id="onlineNoticeSection">
+              <div class="section-header">
+                <div class="section-title">
+                  <span class="section-emoji">📌</span>
+                  <h3>Online Class Notice</h3>
+                  <span class="badge badge-success">Always in Output</span>
+                </div>
+              </div>
+              
+              <div class="online-notice-card">
+                <div class="online-notice-icon">📌</div>
+                <div class="online-notice-content">
+                  <input type="text" id="inputOnlineNoticeText" class="form-input form-input-sm" 
+                    value="If anyone needs to attend class in online mode, link is provided in the description of this group." 
+                    placeholder="Enter online mode notice message..." />
+                  <span class="form-hint">Automatically added at the end of the schedule for WhatsApp.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Column: Live WhatsApp Preview & Share -->
+        <div class="builder-right-col">
+          <div class="preview-panel card sticky-panel">
+            
+            <div class="preview-header">
+              <div class="preview-title">
+                <span class="whatsapp-badge-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </span>
+                <span>WhatsApp Format Preview</span>
+              </div>
+              
+              <div class="view-mode-tabs">
+                <button type="button" class="tab-btn active" id="tabFormatted">Chat View</button>
+                <button type="button" class="tab-btn" id="tabRawText">Raw Text</button>
+              </div>
+            </div>
+
+            <!-- WhatsApp Chat Message Simulation -->
+            <div class="preview-body" id="whatsappChatContainer">
+              <div class="whatsapp-bubble" id="whatsappBubble">
+                <div class="whatsapp-message-content" id="previewFormattedText">
+                  <!-- Formatted HTML preview -->
+                </div>
+                <div class="whatsapp-meta">
+                  <span class="whatsapp-time" id="previewTimestamp">10:00 AM</span>
+                  <span class="whatsapp-ticks">✓✓</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Raw Monospace Text View (Hidden by default) -->
+            <div class="raw-text-container hidden" id="rawTextContainer">
+              <textarea id="rawTextOutput" readonly rows="12" spellcheck="false" class="raw-textarea"></textarea>
+            </div>
+
+            <!-- Primary Sharing Actions -->
+            <div class="share-actions-group">
+              <button id="btnShareWhatsApp" class="btn btn-whatsapp btn-block btn-lg">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Share on WhatsApp
+              </button>
+
+              <div class="secondary-share-row">
+                <button id="btnCopyText" class="btn btn-outline-primary flex-1">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>Copy Text</span>
+                </button>
+
+                <button id="btnDownloadTxt" class="btn btn-outline-secondary flex-1">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Download</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- MODAL: ADD / EDIT CLASS DIALOG -->
+  <div id="classModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon" id="modalTypeEmoji">📘</span>
+          <h2 id="modalTitle">Add Compulsory Class</h2>
+        </div>
+        <button id="btnCloseModal" class="btn-close" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="classForm" class="modal-form">
+        <input type="hidden" id="editClassId" value="" />
+        <input type="hidden" id="classCategory" value="compulsory" />
+
+        <!-- 1. Day of the Week -->
+        <div class="form-group">
+          <label for="inputDay" class="form-label">
+            1. Day <span class="required">*</span>
+          </label>
+          <div class="select-wrapper">
+            <select id="inputDay" class="form-select" required>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday" selected>Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+
+        <!-- 2. Duration -->
+        <div class="form-group">
+          <label for="inputDuration" class="form-label">
+            2. Duration <span class="required">*</span>
+            <span class="form-hint">Type duration as seen in schedule (e.g. 4.00-5:10PM, 1–2 PM)</span>
+          </label>
+          <input type="text" id="inputDuration" class="form-input" placeholder="e.g. 4.00-5:10PM or 1–2 PM" required />
+          
+          <!-- Quick Duration Presets for convenience -->
+          <div class="quick-chips-row">
+            <span class="chips-label">Quick presets:</span>
+            <button type="button" class="chip-btn" data-time="1–2 PM">1–2 PM</button>
+            <button type="button" class="chip-btn" data-time="2–4 PM">2–4 PM</button>
+            <button type="button" class="chip-btn" data-time="4–5 PM">4–5 PM</button>
+            <button type="button" class="chip-btn" data-time="4.00-5:10PM">4.00-5:10PM</button>
+            <button type="button" class="chip-btn" data-time="5:15-7.00PM">5:15-7.00PM</button>
+            <button type="button" class="chip-btn" data-time="7.00-8.00PM">7.00-8.00PM</button>
+          </div>
+        </div>
+
+        <!-- 3. Subject -->
+        <div class="form-group">
+          <label for="inputSubject" class="form-label">
+            3. Subject <span class="required">*</span>
+          </label>
+          <div class="select-wrapper">
+            <select id="inputSubject" class="form-select" required>
+              <option value="Physics">Physics</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="Maths" selected>Maths</option>
+              <option value="Biology">Biology</option>
+              <option value="custom">Custom (Type below)...</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+
+          <div id="customSubjectWrapper" class="mt-2 hidden">
+            <input type="text" id="inputCustomSubject" class="form-input" placeholder="Type custom subject name (e.g. English, Accounts)" />
+          </div>
+        </div>
+
+        <!-- 4. Teacher's Name -->
+        <div class="form-group" id="teacherGroup">
+          <label for="inputTeacher" class="form-label">
+            4. Teacher's Name <span class="required">*</span>
+          </label>
+          <div class="select-wrapper">
+            <select id="inputTeacher" class="form-select" required>
+              <option value="Nitin Sir" selected>Nitin Sir</option>
+              <option value="Neelam Ma'am">Neelam Ma'am</option>
+              <option value="Ankit Sir">Ankit Sir</option>
+              <option value="Shweta Mam">Shweta Mam</option>
+              <option value="Sumit Sir">Sumit Sir</option>
+              <option value="Abhijit Sir">Abhijit Sir</option>
+              <option value="custom">Custom Teacher...</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+
+          <div id="customTeacherWrapper" class="mt-2 hidden">
+            <input type="text" id="inputCustomTeacher" class="form-input" placeholder="Type teacher's name" />
+          </div>
+        </div>
+
+        <!-- EXTRA CLASS SPECIFIC FIELDS -->
+        <div id="extraFieldsContainer" class="extra-fields-section hidden">
+          <div class="extra-fields-header">
+            <span>Extra Class Details</span>
+          </div>
+
+          <!-- 5. Topic Name -->
+          <div class="form-group">
+            <label for="inputTopic" class="form-label">
+              5. Topic Name <span class="required">*</span>
+              <span class="form-hint">e.g. Doubt Class, Electrochemistry Doubt Class, Wave Optics Class</span>
+            </label>
+            <input type="text" id="inputTopic" class="form-input" placeholder="e.g. Doubt Class or Electrochemistry Doubt Class" />
+            
+            <div class="quick-chips-row">
+              <span class="chips-label">Quick topics:</span>
+              <button type="button" class="chip-btn chip-topic" data-topic="Doubt Class">Doubt Class</button>
+              <button type="button" class="chip-btn chip-topic" data-topic="Electrochemistry Doubt Class">Electrochemistry Doubt Class</button>
+              <button type="button" class="chip-btn chip-topic" data-topic="Wave Optics Class">Wave Optics Class</button>
+              <button type="button" class="chip-btn chip-topic" data-topic="Revision Class">Revision Class</button>
+            </div>
+          </div>
+
+          <!-- 6. Compulsory For (Student Names) -->
+          <div class="form-group">
+            <label for="inputCompulsoryFor" class="form-label">
+              6. Compulsory for <span class="required">*</span>
+              <span class="form-hint">Type name(s) of students (e.g. Parth, Adhiraj, Khushi)</span>
+            </label>
+            <input type="text" id="inputCompulsoryFor" class="form-input" placeholder="e.g. Parth or Adhiraj or Khushi" />
+          </div>
+
+          <!-- Extra Class Attendance Mode & Welcoming note -->
+          <div class="form-group">
+            <label class="form-label">Attendance Label Style</label>
+            <div class="radio-cards-row">
+              <label class="radio-card">
+                <input type="radio" name="attendanceStyle" value="compulsory_welcome" checked />
+                <span class="radio-text">
+                  <strong>(Compulsory for &lt;Student&gt;) Others are also welcome.</strong>
+                </span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="attendanceStyle" value="for_only" />
+                <span class="radio-text">
+                  <strong>(For &lt;Student&gt;)</strong>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEST SPECIFIC FIELDS -->
+        <div id="testFieldsContainer" class="extra-fields-section hidden">
+          <div class="extra-fields-header test-header">
+            <span>Test Details</span>
+          </div>
+
+          <!-- 4. Topic (optional) -->
+          <div class="form-group">
+            <label for="inputTestTopic" class="form-label">
+              4. Topic <span class="optional-badge">(Optional)</span>
+              <span class="form-hint">Type topic or multiple topics separated by commas (e.g. AoI, Differential eq, LPP)</span>
+            </label>
+            <input type="text" id="inputTestTopic" class="form-input" placeholder="e.g. AoI, Differential eq, LPP" />
+            
+            <div class="quick-chips-row">
+              <span class="chips-label">Sample topics:</span>
+              <button type="button" class="chip-btn chip-test-topic" data-topic="AoI, Differential eq, LPP">AoI, Differential eq, LPP</button>
+              <button type="button" class="chip-btn chip-test-topic" data-topic="Differential eq">Differential eq</button>
+              <button type="button" class="chip-btn chip-test-topic" data-topic="Electrochemistry">Electrochemistry</button>
+              <button type="button" class="chip-btn chip-test-topic" data-topic="Full Syllabus">Full Syllabus</button>
+            </div>
+          </div>
+
+          <!-- 5. Optional test checklist -->
+          <div class="form-group">
+            <label class="form-label">5. Optional Test (Checklist)</label>
+            <label class="checkbox-card">
+              <input type="checkbox" id="inputIsOptionalTest" />
+              <div class="checkbox-card-content">
+                <span class="checkbox-title">Mark as Optional Test</span>
+                <span class="checkbox-subtitle">If <strong>unchecked</strong>, this will be scheduled as a <strong>Compulsory Test</strong> with the required attendance &amp; exam mode guidelines.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- COMPULSORY CLASS NOTE BANNER -->
+        <div id="compulsoryNoteBanner" class="info-banner">
+          <span class="banner-icon">ℹ️</span>
+          <div>
+            <strong>Mode:</strong> <code>(OFFLINE + ONLINE)</code> will be automatically included in the text as standard.
+          </div>
+        </div>
+
+        <!-- TEST NOTE BANNER -->
+        <div id="testNoteBanner" class="info-banner test-info-banner hidden">
+          <span class="banner-icon">📋</span>
+          <div>
+            <strong>Compulsory Tests:</strong> Official exam response guidelines &amp; Ashwini Ma'am contact notice will be automatically included.
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+          <button type="button" id="btnCancelModal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btnSaveClass" class="btn btn-primary">Save Class</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="toast hidden" role="alert" aria-live="assertive">
+    <span class="toast-icon">✓</span>
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
