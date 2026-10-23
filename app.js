@@ -7,10 +7,10 @@
 const state = {
   currentBatch: '',
   currentDay: 'Friday',
-  classes: [], // Array of { id, type: 'compulsory'|'extra', day, duration, subject, teacher, topic, compulsoryFor, attendanceStyle }
+  classes: [], // Array of { id, type: 'compulsory'|'extra'|'test', day, duration, subject, teacher, topic, compulsoryFor, attendanceStyle, isOptional }
   onlineNoticeText: 'If anyone needs to attend class in online mode, link is provided in the description of this group.',
   viewMode: 'chat', // 'chat' or 'raw'
-  theme: localStorage.getItem('m4ex_theme') || 'dark'
+  theme: (typeof localStorage !== 'undefined' && localStorage.getItem('m4ex_theme')) || 'dark'
 };
 
 // --- Preset Data ---
@@ -108,92 +108,98 @@ const SAMPLE_SCHEDULE = {
 };
 
 // --- DOM Elements ---
-const dom = {
-  welcomeScreen: document.getElementById('welcomeScreen'),
-  builderScreen: document.getElementById('builderScreen'),
-  batchSelectInitial: document.getElementById('batchSelectInitial'),
-  btnProceedToBuilder: document.getElementById('btnProceedToBuilder'),
-  activeBatchPill: document.getElementById('activeBatchPill'),
-  activeBatchName: document.getElementById('activeBatchName'),
-  btnSwitchBatch: document.getElementById('btnSwitchBatch'),
-  btnThemeToggle: document.getElementById('btnThemeToggle'),
+let dom = {};
 
-  // Day Selector
-  dayPillsContainer: document.getElementById('dayPillsContainer'),
+function initDom() {
+  if (typeof document === 'undefined') return;
+  dom = {
+    welcomeScreen: document.getElementById('welcomeScreen'),
+    builderScreen: document.getElementById('builderScreen'),
+    batchSelectInitial: document.getElementById('batchSelectInitial'),
+    btnProceedToBuilder: document.getElementById('btnProceedToBuilder'),
+    activeBatchPill: document.getElementById('activeBatchPill'),
+    activeBatchName: document.getElementById('activeBatchName'),
+    btnSwitchBatch: document.getElementById('btnSwitchBatch'),
+    btnThemeToggle: document.getElementById('btnThemeToggle'),
 
-  // Builder Class Lists
-  extraClassList: document.getElementById('extraClassList'),
-  compulsoryClassList: document.getElementById('compulsoryClassList'),
-  testList: document.getElementById('testList'),
-  extraEmptyMsg: document.getElementById('extraEmptyMsg'),
-  compulsoryEmptyMsg: document.getElementById('compulsoryEmptyMsg'),
-  testEmptyMsg: document.getElementById('testEmptyMsg'),
-  extraCountBadge: document.getElementById('extraCountBadge'),
-  compulsoryCountBadge: document.getElementById('compulsoryCountBadge'),
-  testCountBadge: document.getElementById('testCountBadge'),
+    // Day Selector
+    dayPillsContainer: document.getElementById('dayPillsContainer'),
 
-  // Top Bar Actions
-  btnLoadExample: document.getElementById('btnLoadExample'),
-  btnClearSchedule: document.getElementById('btnClearSchedule'),
+    // Builder Class Lists
+    extraClassList: document.getElementById('extraClassList'),
+    compulsoryClassList: document.getElementById('compulsoryClassList'),
+    testList: document.getElementById('testList'),
+    extraEmptyMsg: document.getElementById('extraEmptyMsg'),
+    compulsoryEmptyMsg: document.getElementById('compulsoryEmptyMsg'),
+    testEmptyMsg: document.getElementById('testEmptyMsg'),
+    extraCountBadge: document.getElementById('extraCountBadge'),
+    compulsoryCountBadge: document.getElementById('compulsoryCountBadge'),
+    testCountBadge: document.getElementById('testCountBadge'),
 
-  // Online Notice Input
-  inputOnlineNoticeText: document.getElementById('inputOnlineNoticeText'),
+    // Top Bar Actions
+    btnLoadExample: document.getElementById('btnLoadExample'),
+    btnClearSchedule: document.getElementById('btnClearSchedule'),
 
-  // Add Action Buttons
-  btnOpenCompulsoryModal: document.getElementById('btnOpenCompulsoryModal'),
-  btnOpenExtraModal: document.getElementById('btnOpenExtraModal'),
-  btnOpenTestModal: document.getElementById('btnOpenTestModal'),
+    // Online Notice Input
+    inputOnlineNoticeText: document.getElementById('inputOnlineNoticeText'),
 
-  // Modal
-  classModal: document.getElementById('classModal'),
-  modalTitle: document.getElementById('modalTitle'),
-  modalTypeEmoji: document.getElementById('modalTypeEmoji'),
-  btnCloseModal: document.getElementById('btnCloseModal'),
-  btnCancelModal: document.getElementById('btnCancelModal'),
-  classForm: document.getElementById('classForm'),
-  editClassId: document.getElementById('editClassId'),
-  classCategory: document.getElementById('classCategory'),
+    // Add Action Buttons
+    btnOpenCompulsoryModal: document.getElementById('btnOpenCompulsoryModal'),
+    btnOpenExtraModal: document.getElementById('btnOpenExtraModal'),
+    btnOpenTestModal: document.getElementById('btnOpenTestModal'),
 
-  // Form Inputs
-  inputDay: document.getElementById('inputDay'),
-  inputDuration: document.getElementById('inputDuration'),
-  inputSubject: document.getElementById('inputSubject'),
-  customSubjectWrapper: document.getElementById('customSubjectWrapper'),
-  inputCustomSubject: document.getElementById('inputCustomSubject'),
-  teacherGroup: document.getElementById('teacherGroup'),
-  inputTeacher: document.getElementById('inputTeacher'),
-  customTeacherWrapper: document.getElementById('customTeacherWrapper'),
-  inputCustomTeacher: document.getElementById('inputCustomTeacher'),
+    // Modal
+    classModal: document.getElementById('classModal'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalTypeEmoji: document.getElementById('modalTypeEmoji'),
+    btnCloseModal: document.getElementById('btnCloseModal'),
+    btnCancelModal: document.getElementById('btnCancelModal'),
+    classForm: document.getElementById('classForm'),
+    editClassId: document.getElementById('editClassId'),
+    classCategory: document.getElementById('classCategory'),
 
-  // Extra Fields
-  extraFieldsContainer: document.getElementById('extraFieldsContainer'),
-  inputTopic: document.getElementById('inputTopic'),
-  inputCompulsoryFor: document.getElementById('inputCompulsoryFor'),
-  compulsoryNoteBanner: document.getElementById('compulsoryNoteBanner'),
+    // Form Inputs
+    inputDay: document.getElementById('inputDay'),
+    inputDuration: document.getElementById('inputDuration'),
+    inputSubject: document.getElementById('inputSubject'),
+    customSubjectWrapper: document.getElementById('customSubjectWrapper'),
+    inputCustomSubject: document.getElementById('inputCustomSubject'),
+    teacherGroup: document.getElementById('teacherGroup'),
+    inputTeacher: document.getElementById('inputTeacher'),
+    customTeacherWrapper: document.getElementById('customTeacherWrapper'),
+    inputCustomTeacher: document.getElementById('inputCustomTeacher'),
 
-  // Test Specific Fields
-  testFieldsContainer: document.getElementById('testFieldsContainer'),
-  inputTestTopic: document.getElementById('inputTestTopic'),
-  inputIsOptionalTest: document.getElementById('inputIsOptionalTest'),
-  testNoteBanner: document.getElementById('testNoteBanner'),
+    // Extra Fields
+    extraFieldsContainer: document.getElementById('extraFieldsContainer'),
+    inputTopic: document.getElementById('inputTopic'),
+    inputCompulsoryFor: document.getElementById('inputCompulsoryFor'),
+    compulsoryNoteBanner: document.getElementById('compulsoryNoteBanner'),
 
-  // Preview & Sharing
-  tabFormatted: document.getElementById('tabFormatted'),
-  tabRawText: document.getElementById('tabRawText'),
-  whatsappChatContainer: document.getElementById('whatsappChatContainer'),
-  rawTextContainer: document.getElementById('rawTextContainer'),
-  previewFormattedText: document.getElementById('previewFormattedText'),
-  rawTextOutput: document.getElementById('rawTextOutput'),
-  previewTimestamp: document.getElementById('previewTimestamp'),
-  btnShareWhatsApp: document.getElementById('btnShareWhatsApp'),
-  btnCopyText: document.getElementById('btnCopyText'),
-  btnDownloadTxt: document.getElementById('btnDownloadTxt'),
-  toastNotification: document.getElementById('toastNotification'),
-  toastMessage: document.getElementById('toastMessage')
-};
+    // Test Specific Fields
+    testFieldsContainer: document.getElementById('testFieldsContainer'),
+    inputTestTopic: document.getElementById('inputTestTopic'),
+    inputIsOptionalTest: document.getElementById('inputIsOptionalTest'),
+    testNoteBanner: document.getElementById('testNoteBanner'),
+
+    // Preview & Sharing
+    tabFormatted: document.getElementById('tabFormatted'),
+    tabRawText: document.getElementById('tabRawText'),
+    whatsappChatContainer: document.getElementById('whatsappChatContainer'),
+    rawTextContainer: document.getElementById('rawTextContainer'),
+    previewFormattedText: document.getElementById('previewFormattedText'),
+    rawTextOutput: document.getElementById('rawTextOutput'),
+    previewTimestamp: document.getElementById('previewTimestamp'),
+    btnShareWhatsApp: document.getElementById('btnShareWhatsApp'),
+    btnCopyText: document.getElementById('btnCopyText'),
+    btnDownloadTxt: document.getElementById('btnDownloadTxt'),
+    toastNotification: document.getElementById('toastNotification'),
+    toastMessage: document.getElementById('toastMessage')
+  };
+}
 
 // --- Initialization ---
 function init() {
+  initDom();
   applyTheme(state.theme);
   setupEventListeners();
   loadSavedState();
@@ -203,9 +209,13 @@ function init() {
 // --- Theme Management ---
 function applyTheme(theme) {
   state.theme = theme;
-  document.body.classList.remove('theme-dark', 'theme-light');
-  document.body.classList.add(`theme-${theme}`);
-  localStorage.setItem('m4ex_theme', theme);
+  if (typeof document !== 'undefined') {
+    document.body.classList.remove('theme-dark', 'theme-light');
+    document.body.classList.add(`theme-${theme}`);
+  }
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('m4ex_theme', theme);
+  }
 }
 
 function toggleTheme() {
@@ -1042,6 +1052,7 @@ function confirmClearSchedule() {
 
 // --- LocalStorage State Persistence ---
 function saveState() {
+  if (typeof localStorage === 'undefined') return;
   try {
     const data = {
       currentBatch: state.currentBatch,
@@ -1056,6 +1067,10 @@ function saveState() {
 }
 
 function loadSavedState() {
+  if (typeof localStorage === 'undefined') {
+    switchToWelcomeScreen();
+    return;
+  }
   try {
     const raw = localStorage.getItem('m4ex_scheduler_data');
     if (raw) {
@@ -1084,6 +1099,7 @@ function loadSavedState() {
 // --- Toast & Utility Helpers ---
 let toastTimeout = null;
 function showToast(message) {
+  if (!dom.toastMessage || !dom.toastNotification) return;
   dom.toastMessage.textContent = message;
   dom.toastNotification.classList.remove('hidden');
 
@@ -1115,5 +1131,12 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// Run on page load
-document.addEventListener('DOMContentLoaded', init);
+// Run on page load (in browser only)
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', init);
+}
+
+// Safe export for Node.js / Vercel
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { state, generateScheduleText };
+}
