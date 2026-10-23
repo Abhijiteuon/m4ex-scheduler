@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Text schedule maker and WhatsApp formatter for Mission for Excellence (M4EX) Coaching Institute",
   "scripts": {
+    "build": "echo Static site ready",
     "start": "node scripts/server.js",
     "dev": "node scripts/server.js"
   },
@@ -10,8 +11,6 @@
     "m4ex",
     "schedule",
     "whatsapp",
-    "coaching",
-    "institute",
     "scheduler"
   ],
   "author": "Mission for Excellence",
