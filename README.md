@@ -2,6 +2,9 @@
 
 A modern, fast, and responsive web application designed for **Mission for Excellence (M4EX)** to quickly build, format, and share coaching class schedules directly on **WhatsApp**.
 
+🔗 **Live Website**: [https://m4ex-scheduler.vercel.app](https://m4ex-scheduler.vercel.app)  
+📦 **GitHub Repository**: [https://github.com/Abhijiteuon/m4ex-scheduler](https://github.com/Abhijiteuon/m4ex-scheduler)
+
 ---
 
 ## 🌟 Key Features
