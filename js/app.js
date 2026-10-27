@@ -204,9 +204,17 @@ function initDom() {
     btnMobileBackToEdit: document.getElementById('btnMobileBackToEdit'),
     mobileTotalCountBadge: document.getElementById('mobileTotalCountBadge'),
     mobileFloatingBar: document.getElementById('mobileFloatingBar'),
+    mobileBarEditContent: document.getElementById('mobileBarEditContent'),
+    mobileBarPreviewContent: document.getElementById('mobileBarPreviewContent'),
     mobileFloatingCount: document.getElementById('mobileFloatingCount'),
     mobileFloatingBatch: document.getElementById('mobileFloatingBatch'),
     btnFloatingPreview: document.getElementById('btnFloatingPreview'),
+    btnFloatingBack: document.getElementById('btnFloatingBack'),
+    btnFloatingCopy: document.getElementById('btnFloatingCopy'),
+    btnFloatingShare: document.getElementById('btnFloatingShare'),
+    btnEmptyAddExtra: document.getElementById('btnEmptyAddExtra'),
+    btnEmptyAddCompulsory: document.getElementById('btnEmptyAddCompulsory'),
+    btnEmptyAddTest: document.getElementById('btnEmptyAddTest'),
     metaThemeColor: document.getElementById('metaThemeColor')
   };
 }
@@ -320,13 +328,42 @@ function setupEventListeners() {
   // Quick Preset Chips (Duration)
   document.querySelectorAll('.chip-btn[data-time]').forEach(chip => {
     chip.addEventListener('click', () => {
+      triggerHaptic(10);
       dom.inputDuration.value = chip.getAttribute('data-time');
+      highlightActiveChips();
+    });
+  });
+
+  // Quick Preset Chips (Subject)
+  document.querySelectorAll('.chip-subject').forEach(chip => {
+    chip.addEventListener('click', () => {
+      triggerHaptic(10);
+      const subject = chip.getAttribute('data-subject');
+      dom.inputSubject.value = subject;
+      dom.customSubjectWrapper.classList.add('hidden');
+      dom.inputCustomSubject.value = '';
+      dom.inputCustomSubject.required = false;
+      highlightActiveChips();
+    });
+  });
+
+  // Quick Preset Chips (Teacher)
+  document.querySelectorAll('.chip-teacher').forEach(chip => {
+    chip.addEventListener('click', () => {
+      triggerHaptic(10);
+      const teacher = chip.getAttribute('data-teacher');
+      dom.inputTeacher.value = teacher;
+      dom.customTeacherWrapper.classList.add('hidden');
+      dom.inputCustomTeacher.value = '';
+      dom.inputCustomTeacher.required = false;
+      highlightActiveChips();
     });
   });
 
   // Quick Preset Chips (Topic)
   document.querySelectorAll('.chip-topic').forEach(chip => {
     chip.addEventListener('click', () => {
+      triggerHaptic(10);
       dom.inputTopic.value = chip.getAttribute('data-topic');
     });
   });
@@ -334,9 +371,21 @@ function setupEventListeners() {
   // Quick Preset Chips (Test Topic)
   document.querySelectorAll('.chip-test-topic').forEach(chip => {
     chip.addEventListener('click', () => {
+      triggerHaptic(10);
       dom.inputTestTopic.value = chip.getAttribute('data-topic');
     });
   });
+
+  // Dynamic Chip Highlighting on Manual Input
+  if (dom.inputDuration) {
+    dom.inputDuration.addEventListener('input', highlightActiveChips);
+  }
+  if (dom.inputSubject) {
+    dom.inputSubject.addEventListener('change', highlightActiveChips);
+  }
+  if (dom.inputTeacher) {
+    dom.inputTeacher.addEventListener('change', highlightActiveChips);
+  }
 
   // Class Form Submit
   dom.classForm.addEventListener('submit', handleFormSubmit);
@@ -363,6 +412,57 @@ function setupEventListeners() {
     });
   }
 
+  // Empty Section Quick Add Buttons
+  if (dom.btnEmptyAddExtra) {
+    dom.btnEmptyAddExtra.addEventListener('click', () => openModal('extra'));
+  }
+  if (dom.btnEmptyAddCompulsory) {
+    dom.btnEmptyAddCompulsory.addEventListener('click', () => openModal('compulsory'));
+  }
+  if (dom.btnEmptyAddTest) {
+    dom.btnEmptyAddTest.addEventListener('click', () => openModal('test'));
+  }
+
+  // Close Modal on Backdrop Click
+  if (dom.classModal) {
+    dom.classModal.addEventListener('click', (e) => {
+      if (e.target === dom.classModal) {
+        closeModal();
+      }
+    });
+  }
+
+  // Touch Drag-to-Dismiss on Mobile Bottom Sheet
+  let sheetTouchStartY = 0;
+  const sheetHandle = document.querySelector('.modal-sheet-handle');
+  const modalHeader = document.querySelector('.modal-header');
+
+  const onSheetTouchStart = (e) => {
+    if (e.touches && e.touches[0]) {
+      sheetTouchStartY = e.touches[0].clientY;
+    }
+  };
+
+  const onSheetTouchEnd = (e) => {
+    if (e.changedTouches && e.changedTouches[0]) {
+      const touchEndY = e.changedTouches[0].clientY;
+      if (touchEndY - sheetTouchStartY > 50) {
+        triggerHaptic(15);
+        closeModal();
+      }
+    }
+  };
+
+  if (sheetHandle) {
+    sheetHandle.addEventListener('touchstart', onSheetTouchStart, { passive: true });
+    sheetHandle.addEventListener('touchend', onSheetTouchEnd, { passive: true });
+    sheetHandle.addEventListener('click', () => closeModal());
+  }
+  if (modalHeader) {
+    modalHeader.addEventListener('touchstart', onSheetTouchStart, { passive: true });
+    modalHeader.addEventListener('touchend', onSheetTouchEnd, { passive: true });
+  }
+
   // Keyboard shortcut (Escape to close modal)
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !dom.classModal.classList.contains('hidden')) {
@@ -383,11 +483,62 @@ function setupEventListeners() {
   if (dom.btnFloatingPreview) {
     dom.btnFloatingPreview.addEventListener('click', () => switchMobileView('preview'));
   }
+  if (dom.btnFloatingBack) {
+    dom.btnFloatingBack.addEventListener('click', () => switchMobileView('edit'));
+  }
+  if (dom.btnFloatingCopy) {
+    dom.btnFloatingCopy.addEventListener('click', copyScheduleText);
+  }
+  if (dom.btnFloatingShare) {
+    dom.btnFloatingShare.addEventListener('click', shareOnWhatsApp);
+  }
+}
+
+// --- Mobile Haptic Feedback ---
+function triggerHaptic(duration = 15) {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(duration);
+    } catch (_) {}
+  }
+}
+
+// --- Highlight Active Chips in Modal ---
+function highlightActiveChips() {
+  if (!dom.inputDuration) return;
+
+  const currentDuration = dom.inputDuration.value.trim();
+  document.querySelectorAll('.chip-btn[data-time]').forEach(chip => {
+    if (chip.getAttribute('data-time') === currentDuration) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
+
+  const currentSubject = dom.inputSubject ? dom.inputSubject.value : '';
+  document.querySelectorAll('.chip-subject').forEach(chip => {
+    if (chip.getAttribute('data-subject') === currentSubject) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
+
+  const currentTeacher = dom.inputTeacher ? dom.inputTeacher.value : '';
+  document.querySelectorAll('.chip-teacher').forEach(chip => {
+    if (chip.getAttribute('data-teacher') === currentTeacher) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
 }
 
 // --- Navigation & Views ---
 function switchMobileView(view) {
   state.mobileView = view;
+  triggerHaptic(10);
   if (!dom.builderGrid) return;
   
   if (view === 'preview') {
@@ -395,16 +546,21 @@ function switchMobileView(view) {
     dom.builderGrid.classList.add('mobile-view-preview');
     if (dom.btnMobileTabEdit) dom.btnMobileTabEdit.classList.remove('active');
     if (dom.btnMobileTabPreview) dom.btnMobileTabPreview.classList.add('active');
+    if (dom.mobileBarEditContent) dom.mobileBarEditContent.classList.add('hidden');
+    if (dom.mobileBarPreviewContent) dom.mobileBarPreviewContent.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
     dom.builderGrid.classList.remove('mobile-view-preview');
     dom.builderGrid.classList.add('mobile-view-edit');
     if (dom.btnMobileTabEdit) dom.btnMobileTabEdit.classList.add('active');
     if (dom.btnMobileTabPreview) dom.btnMobileTabPreview.classList.remove('active');
+    if (dom.mobileBarEditContent) dom.mobileBarEditContent.classList.remove('hidden');
+    if (dom.mobileBarPreviewContent) dom.mobileBarPreviewContent.classList.add('hidden');
   }
 }
 
 function selectBatchTile(batch) {
+  triggerHaptic(10);
   if (dom.batchTilesGrid) {
     dom.batchTilesGrid.querySelectorAll('.batch-tile').forEach(tile => {
       if (tile.getAttribute('data-batch') === batch) {
@@ -449,6 +605,7 @@ function switchToWelcomeScreen() {
 }
 
 function setScheduleDay(day) {
+  triggerHaptic(8);
   state.currentDay = day;
   document.querySelectorAll('.day-pill').forEach(pill => {
     if (pill.getAttribute('data-day') === day) {
@@ -573,6 +730,10 @@ function openModal(category, editId = null) {
   }
 
   dom.classModal.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  triggerHaptic(12);
+  highlightActiveChips();
+
   // Avoid sudden keyboard jump on touch/phone screens
   const isTouchDevice = (typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
   if (!isTouchDevice && window.innerWidth > 640) {
@@ -581,9 +742,11 @@ function openModal(category, editId = null) {
 }
 
 function closeModal() {
+  document.body.classList.remove('modal-open');
   dom.classModal.classList.add('hidden');
   dom.classForm.reset();
   dom.editClassId.value = '';
+  highlightActiveChips();
 }
 
 function handleFormSubmit(e) {
@@ -678,6 +841,7 @@ function handleFormSubmit(e) {
 
 // --- Class Actions (Edit, Delete, Duplicate) ---
 function deleteClass(id) {
+  triggerHaptic(20);
   state.classes = state.classes.filter(c => c.id !== id);
   saveState();
   renderSchedule();
@@ -1010,8 +1174,26 @@ function renderSchedule() {
   dom.rawTextOutput.value = rawScheduleText;
   dom.previewFormattedText.innerHTML = formatWhatsAppToHtml(rawScheduleText);
 
+  // Update day indicator dots across entire week
+  updateDayDots();
+
   // Attach card event listeners
   attachCardActionListeners();
+}
+
+function updateDayDots() {
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  days.forEach(day => {
+    const dot = document.querySelector(`.day-dot[data-day-dot="${day}"]`);
+    if (dot) {
+      const hasClasses = state.classes.some(c => (c.day || state.currentDay) === day);
+      if (hasClasses) {
+        dot.classList.add('has-classes');
+      } else {
+        dot.classList.remove('has-classes');
+      }
+    }
+  });
 }
 
 function getSubjectBadgeClass(subject) {
@@ -1147,25 +1329,35 @@ function shareOnWhatsApp() {
     return;
   }
 
-  // Use WhatsApp Web / App share URL
-  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-  
-  // Also try Web Share API on mobile devices if supported
-  if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    navigator.share({
-      title: `${state.currentDay} Schedule (${state.currentBatch})`,
-      text: text
-    }).catch(() => {
-      window.open(whatsappUrl, '_blank');
-    });
+  triggerHaptic(20);
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const encodedText = encodeURIComponent(text);
+
+  if (isMobile) {
+    // Open native WhatsApp app directly on smartphones
+    const appUrl = `whatsapp://send?text=${encodedText}`;
+    const webUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+
+    const startTime = Date.now();
+    window.location.href = appUrl;
+
+    // Fallback to web URL if WhatsApp app protocol is not handled
+    setTimeout(() => {
+      if (Date.now() - startTime < 1500) {
+        window.open(webUrl, '_blank');
+      }
+    }, 700);
   } else {
-    window.open(whatsappUrl, '_blank');
+    window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
   }
 }
 
 function copyScheduleText() {
   const text = generateScheduleText();
   if (!text) return;
+
+  triggerHaptic(15);
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {

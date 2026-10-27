@@ -182,13 +182,34 @@
             <span class="chrono-tag-pill" title="Schedule automatically maintained in chronological order">🕒 Chronological Order</span>
           </div>
           <div class="day-pills" id="dayPillsContainer">
-            <button type="button" class="day-pill" data-day="Monday">Mon</button>
-            <button type="button" class="day-pill" data-day="Tuesday">Tue</button>
-            <button type="button" class="day-pill" data-day="Wednesday">Wed</button>
-            <button type="button" class="day-pill" data-day="Thursday">Thu</button>
-            <button type="button" class="day-pill active" data-day="Friday">Fri</button>
-            <button type="button" class="day-pill" data-day="Saturday">Sat</button>
-            <button type="button" class="day-pill" data-day="Sunday">Sun</button>
+            <button type="button" class="day-pill" data-day="Monday">
+              <span class="day-label">Mon</span>
+              <span class="day-dot" data-day-dot="Monday"></span>
+            </button>
+            <button type="button" class="day-pill" data-day="Tuesday">
+              <span class="day-label">Tue</span>
+              <span class="day-dot" data-day-dot="Tuesday"></span>
+            </button>
+            <button type="button" class="day-pill" data-day="Wednesday">
+              <span class="day-label">Wed</span>
+              <span class="day-dot" data-day-dot="Wednesday"></span>
+            </button>
+            <button type="button" class="day-pill" data-day="Thursday">
+              <span class="day-label">Thu</span>
+              <span class="day-dot" data-day-dot="Thursday"></span>
+            </button>
+            <button type="button" class="day-pill active" data-day="Friday">
+              <span class="day-label">Fri</span>
+              <span class="day-dot" data-day-dot="Friday"></span>
+            </button>
+            <button type="button" class="day-pill" data-day="Saturday">
+              <span class="day-label">Sat</span>
+              <span class="day-dot" data-day-dot="Saturday"></span>
+            </button>
+            <button type="button" class="day-pill" data-day="Sunday">
+              <span class="day-label">Sun</span>
+              <span class="day-dot" data-day-dot="Sunday"></span>
+            </button>
           </div>
         </div>
 
@@ -259,7 +280,8 @@
               </div>
               
               <div class="empty-section-placeholder" id="extraEmptyMsg">
-                No extra classes added yet. Click "+ Add Extra Class" above.
+                <span class="empty-msg-text">No extra classes added yet for this day.</span>
+                <button type="button" class="btn btn-outline-secondary btn-xs empty-quick-add" id="btnEmptyAddExtra">+ Add Extra Class</button>
               </div>
             </div>
 
@@ -281,7 +303,8 @@
               </div>
               
               <div class="empty-section-placeholder" id="compulsoryEmptyMsg">
-                No compulsory classes added yet. Click "+ Add Compulsory Class" above.
+                <span class="empty-msg-text">No compulsory classes added yet for this day.</span>
+                <button type="button" class="btn btn-outline-secondary btn-xs empty-quick-add" id="btnEmptyAddCompulsory">+ Add Compulsory Class</button>
               </div>
             </div>
 
@@ -303,7 +326,8 @@
               </div>
               
               <div class="empty-section-placeholder" id="testEmptyMsg">
-                No tests added yet. Click "+ Add Test" above.
+                <span class="empty-msg-text">No tests scheduled for this day.</span>
+                <button type="button" class="btn btn-outline-secondary btn-xs empty-quick-add" id="btnEmptyAddTest">+ Add Test</button>
               </div>
             </div>
 
@@ -420,14 +444,33 @@
 
       <!-- Mobile Floating Bottom Action Bar (Sticky at bottom on phone) -->
       <div class="mobile-floating-bar" id="mobileFloatingBar">
-        <div class="mobile-floating-left">
-          <span class="mobile-floating-badge" id="mobileFloatingCount">0 classes added</span>
-          <span class="mobile-floating-batch" id="mobileFloatingBatch">12th A2 batch</span>
+        <!-- Edit Mode Content -->
+        <div class="mobile-bar-content" id="mobileBarEditContent">
+          <div class="mobile-floating-left">
+            <span class="mobile-floating-badge" id="mobileFloatingCount">0 classes added</span>
+            <span class="mobile-floating-batch" id="mobileFloatingBatch">12th A2 batch</span>
+          </div>
+          <button type="button" class="btn btn-whatsapp btn-sm mobile-floating-preview-btn" id="btnFloatingPreview">
+            <span>Preview &amp; Share</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </button>
         </div>
-        <button type="button" class="btn btn-whatsapp btn-sm mobile-floating-preview-btn" id="btnFloatingPreview">
-          <span>Preview &amp; Share</span>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        </button>
+
+        <!-- Preview Mode Content -->
+        <div class="mobile-bar-content mobile-bar-preview hidden" id="mobileBarPreviewContent">
+          <button type="button" class="btn btn-secondary btn-sm mobile-floating-back-btn" id="btnFloatingBack">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>Edit</span>
+          </button>
+          <button type="button" class="btn btn-outline-primary btn-sm mobile-floating-copy-btn" id="btnFloatingCopy">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+          <button type="button" class="btn btn-whatsapp btn-sm mobile-floating-share-btn" id="btnFloatingShare">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span>WhatsApp</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -494,6 +537,13 @@
           <label for="inputSubject" class="form-label">
             3. Subject <span class="required">*</span>
           </label>
+          <div class="quick-chips-row" id="subjectChipsRow">
+            <span class="chips-label">Quick select:</span>
+            <button type="button" class="chip-btn chip-subject" data-subject="Maths">Maths</button>
+            <button type="button" class="chip-btn chip-subject" data-subject="Physics">Physics</button>
+            <button type="button" class="chip-btn chip-subject" data-subject="Chemistry">Chemistry</button>
+            <button type="button" class="chip-btn chip-subject" data-subject="Biology">Biology</button>
+          </div>
           <div class="select-wrapper">
             <select id="inputSubject" class="form-select" required>
               <option value="Physics">Physics</option>
@@ -515,6 +565,15 @@
           <label for="inputTeacher" class="form-label">
             4. Teacher's Name <span class="required">*</span>
           </label>
+          <div class="quick-chips-row" id="teacherChipsRow">
+            <span class="chips-label">Quick select:</span>
+            <button type="button" class="chip-btn chip-teacher" data-teacher="Nitin Sir">Nitin Sir</button>
+            <button type="button" class="chip-btn chip-teacher" data-teacher="Neelam Ma'am">Neelam Ma'am</button>
+            <button type="button" class="chip-btn chip-teacher" data-teacher="Ankit Sir">Ankit Sir</button>
+            <button type="button" class="chip-btn chip-teacher" data-teacher="Sumit Sir">Sumit Sir</button>
+            <button type="button" class="chip-btn chip-teacher" data-teacher="Shweta Mam">Shweta Mam</button>
+            <button type="button" class="chip-btn chip-teacher" data-teacher="Abhijit Sir">Abhijit Sir</button>
+          </div>
           <div class="select-wrapper">
             <select id="inputTeacher" class="form-select" required>
               <option value="Nitin Sir" selected>Nitin Sir</option>

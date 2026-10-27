@@ -1520,6 +1520,12 @@ body.theme-light .wa-verified-pill {
   width: 100%;
 }
 
+/* Prevent body scroll when modal bottom sheet is open */
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
 /* Modal Styles */
 .modal-backdrop {
   position: fixed;
@@ -1859,22 +1865,27 @@ button:active,
 /* Tablet & Mobile Breakpoint (<= 768px) */
 @media (max-width: 768px) {
   .app-container {
-    padding: 12px 14px 92px;
-    padding-top: max(12px, env(safe-area-inset-top, 0px));
-    padding-bottom: max(92px, calc(82px + env(safe-area-inset-bottom, 0px)));
+    padding: 10px 12px 96px;
+    padding-top: max(10px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(96px, calc(86px + env(safe-area-inset-bottom, 0px)));
   }
 
-  /* Segmented Mobile Tabs */
+  /* Segmented Mobile Tabs - Sticky with blur */
   .mobile-view-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background-color: var(--bg-card);
+    background-color: rgba(18, 26, 43, 0.92);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     padding: 4px;
     gap: 6px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow-sm);
+    margin-bottom: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    position: sticky;
+    top: max(8px, env(safe-area-inset-top, 8px));
+    z-index: 100;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 
   .mobile-tab-btn {
@@ -1892,6 +1903,12 @@ button:active,
     cursor: pointer;
     font-family: inherit;
     transition: all var(--transition-fast);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-tab-btn:active {
+    transform: scale(0.97);
   }
 
   .mobile-tab-btn.active {
@@ -1943,6 +1960,7 @@ button:active,
     font-weight: 700;
     font-size: 0.9rem;
     border-radius: var(--radius-md);
+    touch-action: manipulation;
   }
 
   /* Floating Bottom Action Bar */
@@ -1951,19 +1969,28 @@ button:active,
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--bg-card);
+    background-color: rgba(18, 26, 43, 0.95);
     border-top: 1px solid var(--border-subtle);
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 900;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 
-  .builder-grid.mobile-view-preview ~ .mobile-floating-bar {
-    display: none !important;
+  .mobile-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .mobile-bar-preview {
+    gap: 8px;
   }
 
   .mobile-floating-left {
@@ -1992,6 +2019,56 @@ button:active,
     font-size: 0.9rem;
     font-weight: 700;
     border-radius: var(--radius-full);
+    touch-action: manipulation;
+  }
+
+  .mobile-floating-preview-btn:active {
+    transform: scale(0.96);
+  }
+
+  .mobile-floating-back-btn {
+    height: 42px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+    touch-action: manipulation;
+  }
+
+  .mobile-floating-copy-btn {
+    height: 42px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    flex: 1;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+
+  .mobile-floating-share-btn {
+    height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    flex: 1.3;
+    justify-content: center;
+    font-size: 0.92rem;
+    touch-action: manipulation;
+  }
+
+  .mobile-floating-back-btn:active,
+  .mobile-floating-copy-btn:active,
+  .mobile-floating-share-btn:active {
+    transform: scale(0.95);
   }
 
   .sticky-panel {
@@ -2076,8 +2153,6 @@ button:active,
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
-    border-radius: var(--radius-lg);
-  }
 
   .welcome-badge {
     font-size: 0.78rem;
@@ -2141,21 +2216,61 @@ button:active,
   }
 
   .day-pills {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 4px;
     width: 100%;
+    padding: 2px 1px;
+  }
+
+  .day-pills::-webkit-scrollbar {
+    display: none;
   }
 
   .day-pill {
-    padding: 8px 1px;
-    font-size: 0.76rem;
+    flex: 1 1 0;
+    min-width: 40px;
+    min-height: 44px;
+    padding: 6px 2px;
+    font-size: 0.78rem;
     text-align: center;
     border-radius: var(--radius-sm);
-    min-width: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 3px;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .day-pill:active {
+    transform: scale(0.94);
+  }
+
+  .day-label {
+    font-weight: 700;
+  }
+
+  .day-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+    transition: all var(--transition-fast);
+  }
+
+  .day-dot.has-classes {
+    background-color: var(--color-m4ex-orange);
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+  }
+
+  .day-pill.active .day-dot.has-classes {
+    background-color: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
   }
 
   .top-bar-actions {
@@ -2170,6 +2285,7 @@ button:active,
     justify-content: center;
     padding: 9px 10px;
     font-size: 0.84rem;
+    touch-action: manipulation;
   }
 
   /* Add Class Action Panel - 3-Tile Compact Grid */
@@ -2183,15 +2299,37 @@ button:active,
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 12px 6px;
-    gap: 6px;
+    padding: 10px 4px;
+    gap: 5px;
     border-radius: var(--radius-md);
-    min-height: 72px;
+    min-height: 70px;
     justify-content: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .btn-add-action:active {
+    transform: scale(0.95);
+  }
+
+  .compulsory-action {
+    background: linear-gradient(145deg, rgba(30, 58, 138, 0.22), rgba(15, 23, 42, 0.4));
+    border-color: rgba(59, 130, 246, 0.45);
+  }
+
+  .extra-action {
+    background: linear-gradient(145deg, rgba(88, 28, 135, 0.22), rgba(15, 23, 42, 0.4));
+    border-color: rgba(168, 85, 247, 0.45);
+  }
+
+  .test-action {
+    background: linear-gradient(145deg, rgba(120, 53, 15, 0.22), rgba(15, 23, 42, 0.4));
+    border-color: rgba(245, 158, 11, 0.45);
   }
 
   .btn-add-action .action-icon {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     margin: 0;
   }
 
@@ -2225,6 +2363,31 @@ button:active,
     font-size: 1rem;
   }
 
+  .empty-section-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .empty-quick-add {
+    margin-top: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    min-height: 34px;
+    touch-action: manipulation;
+  }
+
   .divider-line {
     margin: 16px 0;
   }
@@ -2233,6 +2396,7 @@ button:active,
   .class-card {
     padding: 12px 10px;
     gap: 8px;
+    border-radius: var(--radius-md);
   }
 
   .class-card-bullet {
@@ -2267,9 +2431,17 @@ button:active,
   }
 
   .btn-card-action {
-    width: 38px;
-    height: 38px;
-    padding: 8px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    touch-action: manipulation;
+    border-radius: var(--radius-md);
+  }
+
+  .btn-card-action:active {
+    transform: scale(0.9);
   }
 
   .btn-card-action svg {
@@ -2345,14 +2517,21 @@ button:active,
 
   .modal-sheet-handle {
     display: block;
+    width: 40px;
+    height: 5px;
+    background-color: var(--border-strong);
+    border-radius: var(--radius-full);
+    margin: 10px auto 4px;
+    cursor: pointer;
+    touch-action: none;
   }
 
   .modal-card {
     max-width: 100%;
     width: 100%;
-    max-height: 88vh;
-    max-height: 88dvh;
-    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    max-height: 90dvh;
+    border-radius: 22px 22px 0 0;
     border-bottom: none;
     border-left: none;
     border-right: none;
@@ -2392,16 +2571,18 @@ button:active,
     position: sticky;
     bottom: 0;
     background-color: var(--bg-card);
-    padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 18px max(14px, calc(10px + env(safe-area-inset-bottom, 0px)));
     z-index: 10;
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr 1.6fr;
     gap: 10px;
+    border-top: 1px solid var(--border-subtle);
   }
 
   .modal-actions .btn {
     height: 46px;
     font-size: 0.95rem;
+    touch-action: manipulation;
   }
 
   /* Horizontal Swipe Preset Chips */
@@ -2414,6 +2595,7 @@ button:active,
     padding: 4px 2px 8px;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    touch-action: pan-x;
   }
 
   .quick-chips-row::-webkit-scrollbar {
@@ -2428,11 +2610,26 @@ button:active,
   .chip-btn {
     flex-shrink: 0;
     font-size: 0.8rem;
-    padding: 6px 12px;
+    padding: 7px 13px;
     border-radius: var(--radius-full);
-    min-height: 32px;
+    min-height: 36px;
     display: inline-flex;
     align-items: center;
+    touch-action: manipulation;
+    user-select: none;
+    transition: all var(--transition-fast);
+  }
+
+  .chip-btn:active {
+    transform: scale(0.93);
+  }
+
+  .chip-btn.active {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
   }
 
   /* Radio Card & Checkbox Touch Target */
