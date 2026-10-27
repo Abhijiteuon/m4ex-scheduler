@@ -10,6 +10,7 @@ const state = {
   classes: [], // Array of { id, type: 'compulsory'|'extra'|'test', day, duration, subject, teacher, topic, compulsoryFor, attendanceStyle, isOptional }
   onlineNoticeText: 'If anyone needs to attend class in online mode, link is provided in the description of this group.',
   viewMode: 'chat', // 'chat' or 'raw'
+  mobileView: 'edit', // 'edit' or 'preview'
   theme: (typeof localStorage !== 'undefined' && localStorage.getItem('m4ex_theme')) || 'dark'
 };
 
@@ -116,6 +117,7 @@ function initDom() {
     welcomeScreen: document.getElementById('welcomeScreen'),
     builderScreen: document.getElementById('builderScreen'),
     batchSelectInitial: document.getElementById('batchSelectInitial'),
+    batchTilesGrid: document.getElementById('batchTilesGrid'),
     btnProceedToBuilder: document.getElementById('btnProceedToBuilder'),
     activeBatchPill: document.getElementById('activeBatchPill'),
     activeBatchName: document.getElementById('activeBatchName'),
@@ -193,7 +195,19 @@ function initDom() {
     btnCopyText: document.getElementById('btnCopyText'),
     btnDownloadTxt: document.getElementById('btnDownloadTxt'),
     toastNotification: document.getElementById('toastNotification'),
-    toastMessage: document.getElementById('toastMessage')
+    toastMessage: document.getElementById('toastMessage'),
+
+    // Mobile View Controls
+    builderGrid: document.querySelector('.builder-grid'),
+    btnMobileTabEdit: document.getElementById('btnMobileTabEdit'),
+    btnMobileTabPreview: document.getElementById('btnMobileTabPreview'),
+    btnMobileBackToEdit: document.getElementById('btnMobileBackToEdit'),
+    mobileTotalCountBadge: document.getElementById('mobileTotalCountBadge'),
+    mobileFloatingBar: document.getElementById('mobileFloatingBar'),
+    mobileFloatingCount: document.getElementById('mobileFloatingCount'),
+    mobileFloatingBatch: document.getElementById('mobileFloatingBatch'),
+    btnFloatingPreview: document.getElementById('btnFloatingPreview'),
+    metaThemeColor: document.getElementById('metaThemeColor')
   };
 }
 
@@ -212,6 +226,10 @@ function applyTheme(theme) {
   if (typeof document !== 'undefined') {
     document.body.classList.remove('theme-dark', 'theme-light');
     document.body.classList.add(`theme-${theme}`);
+    const metaTheme = document.getElementById('metaThemeColor');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'dark' ? '#0a0e17' : '#f4f6fa');
+    }
   }
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('m4ex_theme', theme);
@@ -228,9 +246,19 @@ function setupEventListeners() {
   // Theme Toggle
   dom.btnThemeToggle.addEventListener('click', toggleTheme);
 
-  // Initial Batch Selection
+  // Interactive Batch Tiles Grid
+  if (dom.batchTilesGrid) {
+    dom.batchTilesGrid.addEventListener('click', (e) => {
+      const tile = e.target.closest('.batch-tile');
+      if (!tile) return;
+      const batch = tile.getAttribute('data-batch');
+      selectBatchTile(batch);
+    });
+  }
+
+  // Initial Batch Selection Dropdown
   dom.batchSelectInitial.addEventListener('change', () => {
-    dom.btnProceedToBuilder.disabled = !dom.batchSelectInitial.value;
+    selectBatchTile(dom.batchSelectInitial.value);
   });
 
   dom.btnProceedToBuilder.addEventListener('click', () => {
@@ -341,9 +369,59 @@ function setupEventListeners() {
       closeModal();
     }
   });
+
+  // Mobile View Switcher Listeners
+  if (dom.btnMobileTabEdit) {
+    dom.btnMobileTabEdit.addEventListener('click', () => switchMobileView('edit'));
+  }
+  if (dom.btnMobileTabPreview) {
+    dom.btnMobileTabPreview.addEventListener('click', () => switchMobileView('preview'));
+  }
+  if (dom.btnMobileBackToEdit) {
+    dom.btnMobileBackToEdit.addEventListener('click', () => switchMobileView('edit'));
+  }
+  if (dom.btnFloatingPreview) {
+    dom.btnFloatingPreview.addEventListener('click', () => switchMobileView('preview'));
+  }
 }
 
 // --- Navigation & Views ---
+function switchMobileView(view) {
+  state.mobileView = view;
+  if (!dom.builderGrid) return;
+  
+  if (view === 'preview') {
+    dom.builderGrid.classList.remove('mobile-view-edit');
+    dom.builderGrid.classList.add('mobile-view-preview');
+    if (dom.btnMobileTabEdit) dom.btnMobileTabEdit.classList.remove('active');
+    if (dom.btnMobileTabPreview) dom.btnMobileTabPreview.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    dom.builderGrid.classList.remove('mobile-view-preview');
+    dom.builderGrid.classList.add('mobile-view-edit');
+    if (dom.btnMobileTabEdit) dom.btnMobileTabEdit.classList.add('active');
+    if (dom.btnMobileTabPreview) dom.btnMobileTabPreview.classList.remove('active');
+  }
+}
+
+function selectBatchTile(batch) {
+  if (dom.batchTilesGrid) {
+    dom.batchTilesGrid.querySelectorAll('.batch-tile').forEach(tile => {
+      if (tile.getAttribute('data-batch') === batch) {
+        tile.classList.add('selected');
+      } else {
+        tile.classList.remove('selected');
+      }
+    });
+  }
+  if (dom.batchSelectInitial) {
+    dom.batchSelectInitial.value = batch || '';
+  }
+  if (dom.btnProceedToBuilder) {
+    dom.btnProceedToBuilder.disabled = !batch;
+  }
+}
+
 function selectBatch(batch) {
   state.currentBatch = batch;
   dom.activeBatchName.textContent = batch;
@@ -351,6 +429,11 @@ function selectBatch(batch) {
 
   dom.welcomeScreen.classList.add('hidden');
   dom.builderScreen.classList.remove('hidden');
+
+  switchMobileView('edit');
+  if (dom.mobileFloatingBatch) {
+    dom.mobileFloatingBatch.textContent = batch;
+  }
 
   saveState();
   renderSchedule();
@@ -361,8 +444,7 @@ function switchToWelcomeScreen() {
   dom.builderScreen.classList.add('hidden');
   dom.activeBatchPill.classList.add('hidden');
   if (state.currentBatch) {
-    dom.batchSelectInitial.value = state.currentBatch;
-    dom.btnProceedToBuilder.disabled = false;
+    selectBatchTile(state.currentBatch);
   }
 }
 
@@ -491,7 +573,11 @@ function openModal(category, editId = null) {
   }
 
   dom.classModal.classList.remove('hidden');
-  dom.inputDuration.focus();
+  // Avoid sudden keyboard jump on touch/phone screens
+  const isTouchDevice = (typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
+  if (!isTouchDevice && window.innerWidth > 640) {
+    dom.inputDuration.focus();
+  }
 }
 
 function closeModal() {
@@ -582,12 +668,15 @@ function handleFormSubmit(e) {
     setScheduleDay(day);
   }
 
+  // Ensure classes are always maintained in chronological order
+  state.classes.sort((a, b) => parseStartTimeInMinutes(a.duration) - parseStartTimeInMinutes(b.duration));
+
   closeModal();
   saveState();
   renderSchedule();
 }
 
-// --- Class Actions (Edit, Delete, Move) ---
+// --- Class Actions (Edit, Delete, Duplicate) ---
 function deleteClass(id) {
   state.classes = state.classes.filter(c => c.id !== id);
   saveState();
@@ -601,12 +690,14 @@ function duplicateClass(id) {
 
   const clone = {
     ...item,
-    id: 'class_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4)
+    id: (item.type === 'test' ? 'test_' : 'class_') + Date.now() + '_' + Math.random().toString(36).substr(2, 4)
   };
   state.classes.push(clone);
+  state.classes.sort((a, b) => parseStartTimeInMinutes(a.duration) - parseStartTimeInMinutes(b.duration));
+
   saveState();
   renderSchedule();
-  showToast('Class duplicated!');
+  showToast('Class duplicated in chronological order!');
 }
 
 function moveClass(id, direction) {
@@ -624,15 +715,88 @@ function moveClass(id, direction) {
   renderSchedule();
 }
 
+// --- Chronological Time Parsing & Sorting ---
+function parseStartTimeInMinutes(durationStr) {
+  if (!durationStr || typeof durationStr !== 'string') return 9999;
+  const str = durationStr.trim();
+
+  // Split on range separators: hyphen, en-dash, em-dash, or 'to'
+  const parts = str.split(/\s*(?:[-–—]|to)\s*/i);
+  const startPart = parts[0] ? parts[0].trim() : '';
+  const endPart = parts[1] ? parts[1].trim() : '';
+
+  // Check AM/PM in start and end
+  const startMeridianMatch = startPart.match(/(am|pm)/i);
+  const endMeridianMatch = endPart ? endPart.match(/(am|pm)/i) : null;
+
+  let meridian = startMeridianMatch ? startMeridianMatch[1].toLowerCase() : null;
+
+  // Parse hour and minute from startPart (e.g. '4.00', '4:15', '1', '12', '12:30')
+  const timeMatch = startPart.match(/^(\d{1,2})(?:[:.](\d{1,2}))?/);
+  if (!timeMatch) return 9999;
+
+  let hour = parseInt(timeMatch[1], 10);
+  let min = timeMatch[2] ? parseInt(timeMatch[2], 10) : 0;
+
+  // If no explicit meridian on start, deduce from endPart or default heuristics
+  if (!meridian) {
+    if (endMeridianMatch) {
+      const endMeridian = endMeridianMatch[1].toLowerCase();
+      const endTimeMatch = endPart.match(/^(\d{1,2})/);
+      const endHour = endTimeMatch ? parseInt(endTimeMatch[1], 10) : 12;
+
+      if (endMeridian === 'am') {
+        meridian = 'am';
+      } else if (endMeridian === 'pm') {
+        if (hour === 12) {
+          meridian = 'pm'; // 12 PM (noon)
+        } else if (endHour === 12 && hour < 12) {
+          meridian = 'am'; // e.g. 10 - 12 PM (10 AM to 12 PM)
+        } else if (hour > endHour) {
+          meridian = 'am'; // e.g. 11 - 1 PM (11 AM to 1 PM)
+        } else {
+          meridian = 'pm'; // e.g. 1 - 2 PM, 4 - 5 PM
+        }
+      }
+    } else {
+      // Default heuristics for coaching institute schedules
+      if (hour >= 1 && hour <= 6) meridian = 'pm';
+      else if (hour >= 7 && hour <= 11) meridian = 'am';
+      else if (hour === 12) meridian = 'pm';
+      else meridian = 'am';
+    }
+  }
+
+  // Convert to 24-hr format (minutes from midnight 00:00)
+  if (meridian === 'pm' && hour < 12) {
+    hour += 12;
+  } else if (meridian === 'am' && hour === 12) {
+    hour = 0;
+  }
+
+  return hour * 60 + min;
+}
+
+function sortByChronologicalTime(items) {
+  return [...items].sort((a, b) => {
+    const timeA = parseStartTimeInMinutes(a.duration);
+    const timeB = parseStartTimeInMinutes(b.duration);
+    if (timeA !== timeB) {
+      return timeA - timeB;
+    }
+    return (a.subject || '').localeCompare(b.subject || '');
+  });
+}
+
 // --- Text Schedule Generation (Exact WhatsApp format) ---
 function generateScheduleText() {
   const batch = state.currentBatch || '12th A2 batch';
   const day = state.currentDay || 'Friday';
 
-  // Filter extra, compulsory classes and tests
-  const extraClasses = state.classes.filter(c => c.type === 'extra');
-  const compulsoryClasses = state.classes.filter(c => c.type === 'compulsory');
-  const tests = state.classes.filter(c => c.type === 'test');
+  // Filter extra, compulsory classes and tests - all sorted chronologically by start time
+  const extraClasses = sortByChronologicalTime(state.classes.filter(c => c.type === 'extra'));
+  const compulsoryClasses = sortByChronologicalTime(state.classes.filter(c => c.type === 'compulsory'));
+  const tests = sortByChronologicalTime(state.classes.filter(c => c.type === 'test'));
   const compulsoryTests = tests.filter(t => !t.isOptional);
   const optionalTests = tests.filter(t => t.isOptional);
 
@@ -792,41 +956,52 @@ function formatWhatsAppToHtml(rawText) {
 
 // --- Render UI ---
 function renderSchedule() {
-  const extraClasses = state.classes.filter(c => c.type === 'extra');
-  const compulsoryClasses = state.classes.filter(c => c.type === 'compulsory');
-  const tests = state.classes.filter(c => c.type === 'test');
+  // Sort classes chronologically by start time
+  const extraClasses = sortByChronologicalTime(state.classes.filter(c => c.type === 'extra'));
+  const compulsoryClasses = sortByChronologicalTime(state.classes.filter(c => c.type === 'compulsory'));
+  const tests = sortByChronologicalTime(state.classes.filter(c => c.type === 'test'));
 
   // Update counters
   dom.extraCountBadge.textContent = extraClasses.length;
   dom.compulsoryCountBadge.textContent = compulsoryClasses.length;
   if (dom.testCountBadge) dom.testCountBadge.textContent = tests.length;
 
-  // Render Extra Classes List
+  // Update mobile counters
+  const totalClasses = state.classes.length;
+  if (dom.mobileTotalCountBadge) dom.mobileTotalCountBadge.textContent = totalClasses;
+  if (dom.mobileFloatingCount) {
+    dom.mobileFloatingCount.textContent = totalClasses === 1 ? '1 class added' : `${totalClasses} classes added`;
+  }
+  if (dom.mobileFloatingBatch) {
+    dom.mobileFloatingBatch.textContent = state.currentBatch || 'Schedule';
+  }
+
+  // Render Extra Classes List (in chronological order)
   if (extraClasses.length === 0) {
     dom.extraEmptyMsg.classList.remove('hidden');
     dom.extraClassList.innerHTML = '';
   } else {
     dom.extraEmptyMsg.classList.add('hidden');
-    dom.extraClassList.innerHTML = extraClasses.map(cls => createClassCardHtml(cls)).join('');
+    dom.extraClassList.innerHTML = extraClasses.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
   }
 
-  // Render Compulsory Classes List
+  // Render Compulsory Classes List (in chronological order)
   if (compulsoryClasses.length === 0) {
     dom.compulsoryEmptyMsg.classList.remove('hidden');
     dom.compulsoryClassList.innerHTML = '';
   } else {
     dom.compulsoryEmptyMsg.classList.add('hidden');
-    dom.compulsoryClassList.innerHTML = compulsoryClasses.map(cls => createClassCardHtml(cls)).join('');
+    dom.compulsoryClassList.innerHTML = compulsoryClasses.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
   }
 
-  // Render Tests List
+  // Render Tests List (in chronological order)
   if (dom.testList && dom.testEmptyMsg) {
     if (tests.length === 0) {
       dom.testEmptyMsg.classList.remove('hidden');
       dom.testList.innerHTML = '';
     } else {
       dom.testEmptyMsg.classList.add('hidden');
-      dom.testList.innerHTML = tests.map(cls => createClassCardHtml(cls)).join('');
+      dom.testList.innerHTML = tests.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
     }
   }
 
@@ -848,8 +1023,10 @@ function getSubjectBadgeClass(subject) {
   return 'badge-custom';
 }
 
-function createClassCardHtml(cls) {
+function createClassCardHtml(cls, index) {
   const subjectClass = getSubjectBadgeClass(cls.subject);
+  const orderNum = typeof index === 'number' ? `<span class="chrono-order-pill" title="Chronological order #${index + 1}">#${index + 1}</span>` : '';
+  const clockIcon = `<svg class="clock-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
 
   // Special card formatting for Test
   if (cls.type === 'test') {
@@ -863,7 +1040,8 @@ function createClassCardHtml(cls) {
           <span class="class-card-bullet">🔲</span>
           <div class="class-card-info">
             <div class="class-card-time-row">
-              <span class="time-pill">${escapeHtml(cls.duration)}</span>
+              ${orderNum}
+              <span class="time-pill">${clockIcon} ${escapeHtml(cls.duration)}</span>
               <span class="subject-badge ${subjectClass}">${escapeHtml(cls.subject)}</span>
               <span class="${badgeClass}">${testLabel}</span>
             </div>
@@ -891,14 +1069,16 @@ function createClassCardHtml(cls) {
   }
 
   const isExtra = cls.type === 'extra';
+  const cardTypeClass = isExtra ? 'extra-card' : 'compulsory-card';
 
   return `
-    <div class="class-card" data-id="${cls.id}">
+    <div class="class-card ${cardTypeClass}" data-id="${cls.id}">
       <div class="class-card-left">
-        <span class="class-card-bullet">⭕</span>
+        <span class="class-card-bullet">${isExtra ? '⭐' : '⭕'}</span>
         <div class="class-card-info">
           <div class="class-card-time-row">
-            <span class="time-pill">${escapeHtml(cls.duration)}</span>
+            ${orderNum}
+            <span class="time-pill">${clockIcon} ${escapeHtml(cls.duration)}</span>
             <span class="subject-badge ${subjectClass}">${escapeHtml(cls.subject)}</span>
           </div>
           
@@ -1025,6 +1205,9 @@ function loadSampleSchedule() {
   state.currentBatch = SAMPLE_SCHEDULE.batch;
   state.currentDay = SAMPLE_SCHEDULE.day;
   state.classes = JSON.parse(JSON.stringify(SAMPLE_SCHEDULE.classes));
+  // Sort sample classes in chronological order
+  state.classes.sort((a, b) => parseStartTimeInMinutes(a.duration) - parseStartTimeInMinutes(b.duration));
+
   state.onlineNoticeText = 'If anyone needs to attend class in online mode, link is provided in the description of this group.';
   if (dom.inputOnlineNoticeText) {
     dom.inputOnlineNoticeText.value = state.onlineNoticeText;
@@ -1033,11 +1216,12 @@ function loadSampleSchedule() {
   // Sync pills and inputs
   dom.activeBatchName.textContent = state.currentBatch;
   dom.batchSelectInitial.value = state.currentBatch;
+  selectBatchTile(state.currentBatch);
   setScheduleDay(state.currentDay);
 
   saveState();
   renderSchedule();
-  showToast('Sample schedule loaded from example!');
+  showToast('Sample schedule loaded in chronological order!');
 }
 
 function confirmClearSchedule() {
@@ -1084,6 +1268,7 @@ function loadSavedState() {
           if (dom.inputOnlineNoticeText) dom.inputOnlineNoticeText.value = state.onlineNoticeText;
         }
         selectBatch(state.currentBatch);
+        selectBatchTile(state.currentBatch);
         setScheduleDay(state.currentDay);
         return;
       }

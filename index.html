@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0e17" id="metaThemeColor" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
   <title>M4EX Scheduler — Mission for Excellence</title>
   <meta name="description" content="Generate and share formatted class schedules directly on WhatsApp for Mission for Excellence coaching institute." />
   
@@ -22,15 +26,26 @@
     <header class="navbar">
       <div class="nav-brand">
         <div class="logo-badge">
-          <span class="logo-emoji">🔸</span>
+          <div class="logo-icon-box">
+            <span class="logo-mark">M4</span>
+          </div>
           <div class="brand-text">
-            <span class="brand-name">M4EX</span>
-            <span class="brand-sub">Mission for Excellence</span>
+            <div class="brand-title-row">
+              <span class="brand-name">M4EX</span>
+              <span class="brand-chip">SCHEDULER</span>
+            </div>
+            <span class="brand-sub">Mission for Excellence Coaching</span>
           </div>
         </div>
       </div>
 
       <div class="nav-actions">
+        <!-- Chronological Indicator Badge -->
+        <div class="chrono-status-pill" title="All classes automatically sorted by start time">
+          <span class="chrono-dot"></span>
+          <span class="chrono-text">Chronological</span>
+        </div>
+
         <!-- Current Batch Pill (shown when in builder) -->
         <div id="activeBatchPill" class="active-batch-pill hidden">
           <span class="batch-indicator"></span>
@@ -49,17 +64,56 @@
     <section id="welcomeScreen" class="screen-view welcome-view">
       <div class="welcome-card card">
         <div class="welcome-badge">
-          <span class="badge-icon">📅</span>
-          <span>Official Schedule Generator</span>
+          <span class="badge-icon">🎓</span>
+          <span>Official M4EX Schedule Generator</span>
         </div>
 
         <h1 class="welcome-title">Welcome to M4EX Scheduler</h1>
-        <p class="welcome-subtitle">Mission for Excellence Coaching Institute</p>
+        <p class="welcome-subtitle">Mission for Excellence Coaching Institute • Auto-Chronological Ordering</p>
 
         <div class="batch-selection-box">
           <label for="batchSelectInitial" class="form-label font-bold">
             Choose for which batch do you want to schedule classes for:
           </label>
+          
+          <!-- Interactive Batch Tiles Grid -->
+          <div class="batch-tiles-grid" id="batchTilesGrid">
+            <button type="button" class="batch-tile" data-batch="12th A1 batch">
+              <span class="batch-tile-level">Class 12</span>
+              <span class="batch-tile-name">12th A1 batch</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="12th A2 batch">
+              <span class="batch-tile-level">Class 12</span>
+              <span class="batch-tile-name">12th A2 batch</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="11th B1 batch">
+              <span class="batch-tile-level">Class 11</span>
+              <span class="batch-tile-name">11th B1 batch</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="11th B2 batch">
+              <span class="batch-tile-level">Class 11</span>
+              <span class="batch-tile-name">11th B2 batch</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="10th C1 batch">
+              <span class="batch-tile-level">Class 10</span>
+              <span class="batch-tile-name">10th C1 batch</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="10th C2 batch">
+              <span class="batch-tile-level">Class 10</span>
+              <span class="batch-tile-name">10th C2 batch</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="9th class">
+              <span class="batch-tile-level">Class 9</span>
+              <span class="batch-tile-name">9th class</span>
+            </button>
+            <button type="button" class="batch-tile" data-batch="8th class">
+              <span class="batch-tile-level">Class 8</span>
+              <span class="batch-tile-name">8th class</span>
+            </button>
+          </div>
+
+          <div class="select-divider"><span>or select from dropdown</span></div>
+
           <div class="select-wrapper">
             <select id="batchSelectInitial" class="form-select custom-select-lg">
               <option value="" disabled selected>Select a batch from list...</option>
@@ -76,13 +130,17 @@
           </div>
 
           <button id="btnProceedToBuilder" class="btn btn-primary btn-lg btn-block mt-4" disabled>
-            Continue to Schedule Maker
+            <span>Continue to Schedule Maker</span>
             <span class="btn-arrow">→</span>
           </button>
         </div>
 
         <!-- Quick Demo / Features footer -->
         <div class="welcome-footer-features">
+          <div class="feature-item">
+            <span class="feature-icon">🕒</span>
+            <span>Auto Chronological Order</span>
+          </div>
           <div class="feature-item">
             <span class="feature-icon">✨</span>
             <span>Formatted for WhatsApp</span>
@@ -103,10 +161,26 @@
     <!-- STEP 2: SCHEDULE BUILDER DASHBOARD -->
     <section id="builderScreen" class="screen-view builder-view hidden">
       
+      <!-- Mobile Segmented View Tabs (Visible on screens <= 768px) -->
+      <div class="mobile-view-tabs" id="mobileViewTabs" role="tablist">
+        <button type="button" class="mobile-tab-btn active" id="btnMobileTabEdit" role="tab" aria-selected="true">
+          <span class="mobile-tab-icon">✏️</span>
+          <span class="mobile-tab-text">Schedule Editor</span>
+          <span class="mobile-tab-badge" id="mobileTotalCountBadge">0</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" id="btnMobileTabPreview" role="tab" aria-selected="false">
+          <span class="mobile-tab-icon">💬</span>
+          <span class="mobile-tab-text">WhatsApp Preview</span>
+        </button>
+      </div>
+
       <!-- Day & Quick Settings Bar -->
       <div class="schedule-top-bar card">
         <div class="day-selection-group">
-          <span class="bar-label">Schedule Day:</span>
+          <div class="bar-header-label">
+            <span class="bar-label">Schedule Day:</span>
+            <span class="chrono-tag-pill" title="Schedule automatically maintained in chronological order">🕒 Chronological Order</span>
+          </div>
           <div class="day-pills" id="dayPillsContainer">
             <button type="button" class="day-pill" data-day="Monday">Mon</button>
             <button type="button" class="day-pill" data-day="Tuesday">Tue</button>
@@ -173,10 +247,11 @@
             <div class="section-group" id="extraClassesSection">
               <div class="section-header">
                 <div class="section-title">
-                  <span class="section-emoji">🔰</span>
+                  <span class="section-emoji">⭐</span>
                   <h3>Extra Classes</h3>
                   <span class="badge count-badge" id="extraCountBadge">0</span>
                 </div>
+                <span class="section-sort-indicator" title="Classes arranged in chronological order">🕒 Chronological</span>
               </div>
               
               <div class="class-list" id="extraClassList">
@@ -194,10 +269,11 @@
             <div class="section-group" id="compulsoryClassesSection">
               <div class="section-header">
                 <div class="section-title">
-                  <span class="section-emoji">🔰</span>
+                  <span class="section-emoji">📘</span>
                   <h3>Compulsory Class</h3>
                   <span class="badge count-badge" id="compulsoryCountBadge">0</span>
                 </div>
+                <span class="section-sort-indicator" title="Classes arranged in chronological order">🕒 Chronological</span>
               </div>
               
               <div class="class-list" id="compulsoryClassList">
@@ -215,10 +291,11 @@
             <div class="section-group" id="testsSection">
               <div class="section-header">
                 <div class="section-title">
-                  <span class="section-emoji">🔰</span>
+                  <span class="section-emoji">📝</span>
                   <h3>Tests</h3>
                   <span class="badge count-badge" id="testCountBadge">0</span>
                 </div>
+                <span class="section-sort-indicator" title="Tests arranged in chronological order">🕒 Chronological</span>
               </div>
               
               <div class="class-list" id="testList">
@@ -260,6 +337,11 @@
         <div class="builder-right-col">
           <div class="preview-panel card sticky-panel">
             
+            <!-- Mobile Quick Return Button -->
+            <button type="button" class="btn btn-secondary btn-sm mobile-back-to-edit" id="btnMobileBackToEdit">
+              <span>← Back to Schedule Editor</span>
+            </button>
+
             <div class="preview-header">
               <div class="preview-title">
                 <span class="whatsapp-badge-icon">
@@ -276,7 +358,26 @@
 
             <!-- WhatsApp Chat Message Simulation -->
             <div class="preview-body" id="whatsappChatContainer">
+              <!-- WhatsApp Simulated App Bar -->
+              <div class="wa-simulated-bar">
+                <div class="wa-user-col">
+                  <div class="wa-avatar-badge">
+                    <span>M4</span>
+                    <span class="wa-live-status"></span>
+                  </div>
+                  <div class="wa-user-text">
+                    <span class="wa-user-name">M4EX Institute Official</span>
+                    <span class="wa-user-sub">online • WhatsApp Group</span>
+                  </div>
+                </div>
+                <div class="wa-sim-icons">
+                  <span class="wa-verified-pill" title="Verified Format">✓ Verified</span>
+                </div>
+              </div>
+
+              <!-- Message Bubble -->
               <div class="whatsapp-bubble" id="whatsappBubble">
+                <div class="whatsapp-bubble-tail"></div>
                 <div class="whatsapp-message-content" id="previewFormattedText">
                   <!-- Formatted HTML preview -->
                 </div>
@@ -316,6 +417,18 @@
         </div>
 
       </div>
+
+      <!-- Mobile Floating Bottom Action Bar (Sticky at bottom on phone) -->
+      <div class="mobile-floating-bar" id="mobileFloatingBar">
+        <div class="mobile-floating-left">
+          <span class="mobile-floating-badge" id="mobileFloatingCount">0 classes added</span>
+          <span class="mobile-floating-batch" id="mobileFloatingBatch">12th A2 batch</span>
+        </div>
+        <button type="button" class="btn btn-whatsapp btn-sm mobile-floating-preview-btn" id="btnFloatingPreview">
+          <span>Preview &amp; Share</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </button>
+      </div>
     </section>
 
   </div>
@@ -324,6 +437,7 @@
   <!-- MODAL: ADD / EDIT CLASS DIALOG -->
   <div id="classModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
+      <div class="modal-sheet-handle"></div>
       <div class="modal-header">
         <div class="modal-title-group">
           <span class="modal-icon" id="modalTypeEmoji">📘</span>
