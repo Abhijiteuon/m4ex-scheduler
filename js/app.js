@@ -114,8 +114,11 @@ let dom = {};
 function initDom() {
   if (typeof document === 'undefined') return;
   dom = {
+    // Screens
     welcomeScreen: document.getElementById('welcomeScreen'),
     builderScreen: document.getElementById('builderScreen'),
+
+    // Initial Batch Selection
     batchSelectInitial: document.getElementById('batchSelectInitial'),
     batchTilesGrid: document.getElementById('batchTilesGrid'),
     btnProceedToBuilder: document.getElementById('btnProceedToBuilder'),
@@ -126,17 +129,6 @@ function initDom() {
 
     // Day Selector
     dayPillsContainer: document.getElementById('dayPillsContainer'),
-
-    // Builder Class Lists
-    extraClassList: document.getElementById('extraClassList'),
-    compulsoryClassList: document.getElementById('compulsoryClassList'),
-    testList: document.getElementById('testList'),
-    extraEmptyMsg: document.getElementById('extraEmptyMsg'),
-    compulsoryEmptyMsg: document.getElementById('compulsoryEmptyMsg'),
-    testEmptyMsg: document.getElementById('testEmptyMsg'),
-    extraCountBadge: document.getElementById('extraCountBadge'),
-    compulsoryCountBadge: document.getElementById('compulsoryCountBadge'),
-    testCountBadge: document.getElementById('testCountBadge'),
 
     // Top Bar Actions
     btnLoadExample: document.getElementById('btnLoadExample'),
@@ -149,16 +141,19 @@ function initDom() {
     btnOpenCompulsoryModal: document.getElementById('btnOpenCompulsoryModal'),
     btnOpenExtraModal: document.getElementById('btnOpenExtraModal'),
     btnOpenTestModal: document.getElementById('btnOpenTestModal'),
+    scheduleEmptyView: document.getElementById('scheduleEmptyView'),
+    emptyDayTitle: document.getElementById('emptyDayTitle'),
+    unifiedClassList: document.getElementById('unifiedClassList'),
 
     // Modal
     classModal: document.getElementById('classModal'),
-    modalTitle: document.getElementById('modalTitle'),
-    modalTypeEmoji: document.getElementById('modalTypeEmoji'),
+    modalTypeTabs: document.getElementById('modalTypeTabs'),
     btnCloseModal: document.getElementById('btnCloseModal'),
     btnCancelModal: document.getElementById('btnCancelModal'),
     classForm: document.getElementById('classForm'),
     editClassId: document.getElementById('editClassId'),
     classCategory: document.getElementById('classCategory'),
+    btnSaveClass: document.getElementById('btnSaveClass'),
 
     // Form Inputs
     inputDay: document.getElementById('inputDay'),
@@ -175,13 +170,11 @@ function initDom() {
     extraFieldsContainer: document.getElementById('extraFieldsContainer'),
     inputTopic: document.getElementById('inputTopic'),
     inputCompulsoryFor: document.getElementById('inputCompulsoryFor'),
-    compulsoryNoteBanner: document.getElementById('compulsoryNoteBanner'),
 
     // Test Specific Fields
     testFieldsContainer: document.getElementById('testFieldsContainer'),
     inputTestTopic: document.getElementById('inputTestTopic'),
     inputIsOptionalTest: document.getElementById('inputIsOptionalTest'),
-    testNoteBanner: document.getElementById('testNoteBanner'),
 
     // Preview & Sharing
     tabFormatted: document.getElementById('tabFormatted'),
@@ -193,7 +186,6 @@ function initDom() {
     previewTimestamp: document.getElementById('previewTimestamp'),
     btnShareWhatsApp: document.getElementById('btnShareWhatsApp'),
     btnCopyText: document.getElementById('btnCopyText'),
-    btnDownloadTxt: document.getElementById('btnDownloadTxt'),
     toastNotification: document.getElementById('toastNotification'),
     toastMessage: document.getElementById('toastMessage'),
 
@@ -201,7 +193,6 @@ function initDom() {
     builderGrid: document.querySelector('.builder-grid'),
     btnMobileTabEdit: document.getElementById('btnMobileTabEdit'),
     btnMobileTabPreview: document.getElementById('btnMobileTabPreview'),
-    btnMobileBackToEdit: document.getElementById('btnMobileBackToEdit'),
     mobileTotalCountBadge: document.getElementById('mobileTotalCountBadge'),
     mobileFloatingBar: document.getElementById('mobileFloatingBar'),
     mobileBarEditContent: document.getElementById('mobileBarEditContent'),
@@ -210,11 +201,7 @@ function initDom() {
     mobileFloatingBatch: document.getElementById('mobileFloatingBatch'),
     btnFloatingPreview: document.getElementById('btnFloatingPreview'),
     btnFloatingBack: document.getElementById('btnFloatingBack'),
-    btnFloatingCopy: document.getElementById('btnFloatingCopy'),
     btnFloatingShare: document.getElementById('btnFloatingShare'),
-    btnEmptyAddExtra: document.getElementById('btnEmptyAddExtra'),
-    btnEmptyAddCompulsory: document.getElementById('btnEmptyAddCompulsory'),
-    btnEmptyAddTest: document.getElementById('btnEmptyAddTest'),
     metaThemeColor: document.getElementById('metaThemeColor')
   };
 }
@@ -325,8 +312,20 @@ function setupEventListeners() {
     }
   });
 
+  // Modal Category Tabs Switcher
+  if (dom.modalTypeTabs) {
+    dom.modalTypeTabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('.modal-type-btn');
+      if (!btn) return;
+      const type = btn.getAttribute('data-type');
+      if (type) {
+        setModalCategory(type);
+      }
+    });
+  }
+
   // Quick Preset Chips (Duration)
-  document.querySelectorAll('.chip-btn[data-time]').forEach(chip => {
+  document.querySelectorAll('.preset-chip[data-time]').forEach(chip => {
     chip.addEventListener('click', () => {
       triggerHaptic(10);
       dom.inputDuration.value = chip.getAttribute('data-time');
@@ -334,57 +333,9 @@ function setupEventListeners() {
     });
   });
 
-  // Quick Preset Chips (Subject)
-  document.querySelectorAll('.chip-subject').forEach(chip => {
-    chip.addEventListener('click', () => {
-      triggerHaptic(10);
-      const subject = chip.getAttribute('data-subject');
-      dom.inputSubject.value = subject;
-      dom.customSubjectWrapper.classList.add('hidden');
-      dom.inputCustomSubject.value = '';
-      dom.inputCustomSubject.required = false;
-      highlightActiveChips();
-    });
-  });
-
-  // Quick Preset Chips (Teacher)
-  document.querySelectorAll('.chip-teacher').forEach(chip => {
-    chip.addEventListener('click', () => {
-      triggerHaptic(10);
-      const teacher = chip.getAttribute('data-teacher');
-      dom.inputTeacher.value = teacher;
-      dom.customTeacherWrapper.classList.add('hidden');
-      dom.inputCustomTeacher.value = '';
-      dom.inputCustomTeacher.required = false;
-      highlightActiveChips();
-    });
-  });
-
-  // Quick Preset Chips (Topic)
-  document.querySelectorAll('.chip-topic').forEach(chip => {
-    chip.addEventListener('click', () => {
-      triggerHaptic(10);
-      dom.inputTopic.value = chip.getAttribute('data-topic');
-    });
-  });
-
-  // Quick Preset Chips (Test Topic)
-  document.querySelectorAll('.chip-test-topic').forEach(chip => {
-    chip.addEventListener('click', () => {
-      triggerHaptic(10);
-      dom.inputTestTopic.value = chip.getAttribute('data-topic');
-    });
-  });
-
-  // Dynamic Chip Highlighting on Manual Input
+  // Dynamic Chip Highlighting on Manual Duration Input
   if (dom.inputDuration) {
     dom.inputDuration.addEventListener('input', highlightActiveChips);
-  }
-  if (dom.inputSubject) {
-    dom.inputSubject.addEventListener('change', highlightActiveChips);
-  }
-  if (dom.inputTeacher) {
-    dom.inputTeacher.addEventListener('change', highlightActiveChips);
   }
 
   // Class Form Submit
@@ -397,7 +348,9 @@ function setupEventListeners() {
   // Sharing Actions
   dom.btnShareWhatsApp.addEventListener('click', shareOnWhatsApp);
   dom.btnCopyText.addEventListener('click', copyScheduleText);
-  dom.btnDownloadTxt.addEventListener('click', downloadScheduleTxt);
+  if (dom.btnDownloadTxt) {
+    dom.btnDownloadTxt.addEventListener('click', downloadScheduleTxt);
+  }
 
   // Example & Clear buttons
   dom.btnLoadExample.addEventListener('click', loadSampleSchedule);
@@ -410,17 +363,6 @@ function setupEventListeners() {
       saveState();
       renderSchedule();
     });
-  }
-
-  // Empty Section Quick Add Buttons
-  if (dom.btnEmptyAddExtra) {
-    dom.btnEmptyAddExtra.addEventListener('click', () => openModal('extra'));
-  }
-  if (dom.btnEmptyAddCompulsory) {
-    dom.btnEmptyAddCompulsory.addEventListener('click', () => openModal('compulsory'));
-  }
-  if (dom.btnEmptyAddTest) {
-    dom.btnEmptyAddTest.addEventListener('click', () => openModal('test'));
   }
 
   // Close Modal on Backdrop Click
@@ -508,26 +450,8 @@ function highlightActiveChips() {
   if (!dom.inputDuration) return;
 
   const currentDuration = dom.inputDuration.value.trim();
-  document.querySelectorAll('.chip-btn[data-time]').forEach(chip => {
+  document.querySelectorAll('.preset-chip[data-time]').forEach(chip => {
     if (chip.getAttribute('data-time') === currentDuration) {
-      chip.classList.add('active');
-    } else {
-      chip.classList.remove('active');
-    }
-  });
-
-  const currentSubject = dom.inputSubject ? dom.inputSubject.value : '';
-  document.querySelectorAll('.chip-subject').forEach(chip => {
-    if (chip.getAttribute('data-subject') === currentSubject) {
-      chip.classList.add('active');
-    } else {
-      chip.classList.remove('active');
-    }
-  });
-
-  const currentTeacher = dom.inputTeacher ? dom.inputTeacher.value : '';
-  document.querySelectorAll('.chip-teacher').forEach(chip => {
-    if (chip.getAttribute('data-teacher') === currentTeacher) {
       chip.classList.add('active');
     } else {
       chip.classList.remove('active');
@@ -634,44 +558,47 @@ function switchViewMode(mode) {
 }
 
 // --- Modal Handlers ---
-function openModal(category, editId = null) {
+function setModalCategory(category) {
+  triggerHaptic(8);
   dom.classCategory.value = category;
-  dom.editClassId.value = editId || '';
+
+  if (dom.modalTypeTabs) {
+    dom.modalTypeTabs.querySelectorAll('.modal-type-btn').forEach(btn => {
+      if (btn.getAttribute('data-type') === category) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
 
   if (category === 'compulsory') {
-    dom.modalTitle.textContent = editId ? 'Edit Compulsory Class' : 'Add Compulsory Class';
-    dom.modalTypeEmoji.textContent = '📘';
     dom.teacherGroup.classList.remove('hidden');
     dom.inputTeacher.required = true;
     dom.extraFieldsContainer.classList.add('hidden');
-    dom.compulsoryNoteBanner.classList.remove('hidden');
     dom.testFieldsContainer.classList.add('hidden');
-    dom.testNoteBanner.classList.add('hidden');
     dom.inputTopic.required = false;
     dom.inputCompulsoryFor.required = false;
   } else if (category === 'extra') {
-    dom.modalTitle.textContent = editId ? 'Edit Extra Class' : 'Add Extra Class';
-    dom.modalTypeEmoji.textContent = '⭐';
     dom.teacherGroup.classList.remove('hidden');
     dom.inputTeacher.required = true;
     dom.extraFieldsContainer.classList.remove('hidden');
-    dom.compulsoryNoteBanner.classList.add('hidden');
     dom.testFieldsContainer.classList.add('hidden');
-    dom.testNoteBanner.classList.add('hidden');
     dom.inputTopic.required = true;
     dom.inputCompulsoryFor.required = true;
   } else if (category === 'test') {
-    dom.modalTitle.textContent = editId ? 'Edit Test' : 'Add Test';
-    dom.modalTypeEmoji.textContent = '📝';
     dom.teacherGroup.classList.add('hidden');
     dom.inputTeacher.required = false;
     dom.extraFieldsContainer.classList.add('hidden');
-    dom.compulsoryNoteBanner.classList.add('hidden');
     dom.testFieldsContainer.classList.remove('hidden');
-    dom.testNoteBanner.classList.remove('hidden');
     dom.inputTopic.required = false;
     dom.inputCompulsoryFor.required = false;
   }
+}
+
+function openModal(category, editId = null) {
+  setModalCategory(category);
+  dom.editClassId.value = editId || '';
 
   // Pre-fill fields
   if (editId) {
@@ -715,6 +642,10 @@ function openModal(category, editId = null) {
         dom.inputTestTopic.value = item.topic || '';
         dom.inputIsOptionalTest.checked = !!item.isOptional;
       }
+
+      if (dom.btnSaveClass) {
+        dom.btnSaveClass.textContent = 'Update Class';
+      }
     }
   } else {
     // Reset form for fresh entry
@@ -727,6 +658,9 @@ function openModal(category, editId = null) {
     dom.inputTestTopic.value = '';
     dom.inputIsOptionalTest.checked = false;
     dom.editClassId.value = '';
+    if (dom.btnSaveClass) {
+      dom.btnSaveClass.textContent = 'Save Class';
+    }
   }
 
   dom.classModal.classList.remove('hidden');
@@ -1120,59 +1054,42 @@ function formatWhatsAppToHtml(rawText) {
 
 // --- Render UI ---
 function renderSchedule() {
-  // Sort classes chronologically by start time
-  const extraClasses = sortByChronologicalTime(state.classes.filter(c => c.type === 'extra'));
-  const compulsoryClasses = sortByChronologicalTime(state.classes.filter(c => c.type === 'compulsory'));
-  const tests = sortByChronologicalTime(state.classes.filter(c => c.type === 'test'));
+  const sortedClasses = sortByChronologicalTime(state.classes);
 
-  // Update counters
-  dom.extraCountBadge.textContent = extraClasses.length;
-  dom.compulsoryCountBadge.textContent = compulsoryClasses.length;
-  if (dom.testCountBadge) dom.testCountBadge.textContent = tests.length;
+  // Update empty state day title
+  if (dom.emptyDayTitle) {
+    dom.emptyDayTitle.textContent = state.currentDay || 'Today';
+  }
 
   // Update mobile counters
-  const totalClasses = state.classes.length;
+  const totalClasses = sortedClasses.length;
   if (dom.mobileTotalCountBadge) dom.mobileTotalCountBadge.textContent = totalClasses;
   if (dom.mobileFloatingCount) {
-    dom.mobileFloatingCount.textContent = totalClasses === 1 ? '1 class added' : `${totalClasses} classes added`;
+    dom.mobileFloatingCount.textContent = totalClasses === 1 ? '1 class' : `${totalClasses} classes`;
   }
   if (dom.mobileFloatingBatch) {
     dom.mobileFloatingBatch.textContent = state.currentBatch || 'Schedule';
   }
 
-  // Render Extra Classes List (in chronological order)
-  if (extraClasses.length === 0) {
-    dom.extraEmptyMsg.classList.remove('hidden');
-    dom.extraClassList.innerHTML = '';
+  // Render unified list or empty view
+  if (totalClasses === 0) {
+    if (dom.scheduleEmptyView) dom.scheduleEmptyView.classList.remove('hidden');
+    if (dom.unifiedClassList) {
+      dom.unifiedClassList.classList.add('hidden');
+      dom.unifiedClassList.innerHTML = '';
+    }
   } else {
-    dom.extraEmptyMsg.classList.add('hidden');
-    dom.extraClassList.innerHTML = extraClasses.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
-  }
-
-  // Render Compulsory Classes List (in chronological order)
-  if (compulsoryClasses.length === 0) {
-    dom.compulsoryEmptyMsg.classList.remove('hidden');
-    dom.compulsoryClassList.innerHTML = '';
-  } else {
-    dom.compulsoryEmptyMsg.classList.add('hidden');
-    dom.compulsoryClassList.innerHTML = compulsoryClasses.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
-  }
-
-  // Render Tests List (in chronological order)
-  if (dom.testList && dom.testEmptyMsg) {
-    if (tests.length === 0) {
-      dom.testEmptyMsg.classList.remove('hidden');
-      dom.testList.innerHTML = '';
-    } else {
-      dom.testEmptyMsg.classList.add('hidden');
-      dom.testList.innerHTML = tests.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
+    if (dom.scheduleEmptyView) dom.scheduleEmptyView.classList.add('hidden');
+    if (dom.unifiedClassList) {
+      dom.unifiedClassList.classList.remove('hidden');
+      dom.unifiedClassList.innerHTML = sortedClasses.map((cls, idx) => createClassCardHtml(cls, idx)).join('');
     }
   }
 
   // Generate Schedule Text
   const rawScheduleText = generateScheduleText();
-  dom.rawTextOutput.value = rawScheduleText;
-  dom.previewFormattedText.innerHTML = formatWhatsAppToHtml(rawScheduleText);
+  if (dom.rawTextOutput) dom.rawTextOutput.value = rawScheduleText;
+  if (dom.previewFormattedText) dom.previewFormattedText.innerHTML = formatWhatsAppToHtml(rawScheduleText);
 
   // Update day indicator dots across entire week
   updateDayDots();
@@ -1197,7 +1114,7 @@ function updateDayDots() {
 }
 
 function getSubjectBadgeClass(subject) {
-  const s = subject.toLowerCase();
+  const s = (subject || '').toLowerCase();
   if (s.includes('physics')) return 'badge-physics';
   if (s.includes('chemistry')) return 'badge-chemistry';
   if (s.includes('math')) return 'badge-maths';
@@ -1207,89 +1124,66 @@ function getSubjectBadgeClass(subject) {
 
 function createClassCardHtml(cls, index) {
   const subjectClass = getSubjectBadgeClass(cls.subject);
-  const orderNum = typeof index === 'number' ? `<span class="chrono-order-pill" title="Chronological order #${index + 1}">#${index + 1}</span>` : '';
+  const orderNum = typeof index === 'number' ? `<span class="chrono-order-pill" title="Order #${index + 1}">#${index + 1}</span>` : '';
   const clockIcon = `<svg class="clock-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
 
-  // Special card formatting for Test
-  if (cls.type === 'test') {
+  let categoryBadge = '';
+  let cardTypeClass = '';
+  let detailsHtml = '';
+
+  if (cls.type === 'compulsory') {
+    cardTypeClass = 'compulsory-card';
+    categoryBadge = `<span class="category-pill pill-compulsory">📘 Compulsory</span>`;
+    detailsHtml = `
+      <div class="class-card-details">
+        ${escapeHtml(cls.subject)} with <strong>${escapeHtml(cls.teacher)}</strong>
+      </div>
+      <div class="class-card-meta">
+        <span class="mode-tag">📶 OFFLINE + ONLINE</span>
+      </div>
+    `;
+  } else if (cls.type === 'extra') {
+    cardTypeClass = 'extra-card';
+    categoryBadge = `<span class="category-pill pill-extra">⭐ Extra</span>`;
+    detailsHtml = `
+      <div class="class-card-details">
+        <strong>${escapeHtml(cls.topic || 'Doubt Class')}</strong> with ${escapeHtml(cls.teacher)}
+      </div>
+      ${cls.compulsoryFor ? `
+        <div class="class-card-meta">
+          <span class="student-tag">👤 ${cls.attendanceStyle === 'for_only' ? 'For' : 'Compulsory for'} <strong>${escapeHtml(cls.compulsoryFor)}</strong></span>
+        </div>
+      ` : ''}
+    `;
+  } else if (cls.type === 'test') {
+    cardTypeClass = 'test-card';
     const isOptional = !!cls.isOptional;
-    const testLabel = isOptional ? 'Optional Test' : 'Compulsory Test';
-    const badgeClass = isOptional ? 'badge-test-optional' : 'badge-test-compulsory';
-
-    return `
-      <div class="class-card test-card" data-id="${cls.id}">
-        <div class="class-card-left">
-          <span class="class-card-bullet">🔲</span>
-          <div class="class-card-info">
-            <div class="class-card-time-row">
-              ${orderNum}
-              <span class="time-pill">${clockIcon} ${escapeHtml(cls.duration)}</span>
-              <span class="subject-badge ${subjectClass}">${escapeHtml(cls.subject)}</span>
-              <span class="${badgeClass}">${testLabel}</span>
-            </div>
-            
-            <div class="class-card-details">
-              <strong>${testLabel}</strong>
-              ${cls.topic ? ` — Topics: <em>${escapeHtml(cls.topic)}</em>` : ''}
-            </div>
-          </div>
-        </div>
-
-        <div class="class-card-actions">
-          <button type="button" class="btn-card-action edit" data-action="edit" title="Edit">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button type="button" class="btn-card-action duplicate" data-action="duplicate" title="Duplicate">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-          <button type="button" class="btn-card-action delete" data-action="delete" title="Delete">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          </button>
-        </div>
+    categoryBadge = `<span class="category-pill pill-test ${isOptional ? 'pill-test-opt' : ''}">📝 ${isOptional ? 'Optional Test' : 'Compulsory Test'}</span>`;
+    detailsHtml = `
+      <div class="class-card-details">
+        <strong>${isOptional ? 'Optional' : 'Compulsory'} ${escapeHtml(cls.subject)} Test</strong>
+        ${cls.topic ? `<span class="test-topics-preview"> — Topics: <em>${escapeHtml(cls.topic)}</em></span>` : ''}
       </div>
     `;
   }
 
-  const isExtra = cls.type === 'extra';
-  const cardTypeClass = isExtra ? 'extra-card' : 'compulsory-card';
-
   return `
     <div class="class-card ${cardTypeClass}" data-id="${cls.id}">
       <div class="class-card-left">
-        <span class="class-card-bullet">${isExtra ? '⭐' : '⭕'}</span>
         <div class="class-card-info">
           <div class="class-card-time-row">
             ${orderNum}
             <span class="time-pill">${clockIcon} ${escapeHtml(cls.duration)}</span>
             <span class="subject-badge ${subjectClass}">${escapeHtml(cls.subject)}</span>
+            ${categoryBadge}
           </div>
-          
-          <div class="class-card-details">
-            ${isExtra 
-              ? `<strong>${escapeHtml(cls.topic || 'Class')}</strong> with ${escapeHtml(cls.teacher)}`
-              : `Compulsory class with <strong>${escapeHtml(cls.teacher)}</strong>`
-            }
-          </div>
-
-          <div class="class-card-meta">
-            ${isExtra && cls.compulsoryFor 
-              ? `<span class="student-tag">👤 For: ${escapeHtml(cls.compulsoryFor)}</span>`
-              : ''
-            }
-            ${!isExtra 
-              ? `<span class="mode-tag">📶 OFFLINE + ONLINE</span>` 
-              : ''
-            }
-          </div>
+          ${detailsHtml}
         </div>
       </div>
 
       <div class="class-card-actions">
         <button type="button" class="btn-card-action edit" data-action="edit" title="Edit">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button type="button" class="btn-card-action duplicate" data-action="duplicate" title="Duplicate">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
         <button type="button" class="btn-card-action delete" data-action="delete" title="Delete">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -1306,14 +1200,10 @@ function attachCardActionListeners() {
     if (!item) return;
 
     const btnEdit = card.querySelector('[data-action="edit"]');
-    const btnDuplicate = card.querySelector('[data-action="duplicate"]');
     const btnDelete = card.querySelector('[data-action="delete"]');
 
     if (btnEdit) {
       btnEdit.addEventListener('click', () => openModal(item.type, id));
-    }
-    if (btnDuplicate) {
-      btnDuplicate.addEventListener('click', () => duplicateClass(id));
     }
     if (btnDelete) {
       btnDelete.addEventListener('click', () => deleteClass(id));

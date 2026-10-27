@@ -40,12 +40,6 @@
       </div>
 
       <div class="nav-actions">
-        <!-- Chronological Indicator Badge -->
-        <div class="chrono-status-pill" title="All classes automatically sorted by start time">
-          <span class="chrono-dot"></span>
-          <span class="chrono-text">Chronological</span>
-        </div>
-
         <!-- Current Batch Pill (shown when in builder) -->
         <div id="activeBatchPill" class="active-batch-pill hidden">
           <span class="batch-indicator"></span>
@@ -174,52 +168,23 @@
         </button>
       </div>
 
-      <!-- Day & Quick Settings Bar -->
+      <!-- Day Selector & Quick Tools Bar -->
       <div class="schedule-top-bar card">
-        <div class="day-selection-group">
-          <div class="bar-header-label">
-            <span class="bar-label">Schedule Day:</span>
-            <span class="chrono-tag-pill" title="Schedule automatically maintained in chronological order">🕒 Chronological Order</span>
-          </div>
-          <div class="day-pills" id="dayPillsContainer">
-            <button type="button" class="day-pill" data-day="Monday">
-              <span class="day-label">Mon</span>
-              <span class="day-dot" data-day-dot="Monday"></span>
-            </button>
-            <button type="button" class="day-pill" data-day="Tuesday">
-              <span class="day-label">Tue</span>
-              <span class="day-dot" data-day-dot="Tuesday"></span>
-            </button>
-            <button type="button" class="day-pill" data-day="Wednesday">
-              <span class="day-label">Wed</span>
-              <span class="day-dot" data-day-dot="Wednesday"></span>
-            </button>
-            <button type="button" class="day-pill" data-day="Thursday">
-              <span class="day-label">Thu</span>
-              <span class="day-dot" data-day-dot="Thursday"></span>
-            </button>
-            <button type="button" class="day-pill active" data-day="Friday">
-              <span class="day-label">Fri</span>
-              <span class="day-dot" data-day-dot="Friday"></span>
-            </button>
-            <button type="button" class="day-pill" data-day="Saturday">
-              <span class="day-label">Sat</span>
-              <span class="day-dot" data-day-dot="Saturday"></span>
-            </button>
-            <button type="button" class="day-pill" data-day="Sunday">
-              <span class="day-label">Sun</span>
-              <span class="day-dot" data-day-dot="Sunday"></span>
-            </button>
-          </div>
+        <div class="day-pills" id="dayPillsContainer">
+          <button type="button" class="day-pill" data-day="Monday">Mon</button>
+          <button type="button" class="day-pill" data-day="Tuesday">Tue</button>
+          <button type="button" class="day-pill" data-day="Wednesday">Wed</button>
+          <button type="button" class="day-pill" data-day="Thursday">Thu</button>
+          <button type="button" class="day-pill active" data-day="Friday">Fri</button>
+          <button type="button" class="day-pill" data-day="Saturday">Sat</button>
+          <button type="button" class="day-pill" data-day="Sunday">Sun</button>
         </div>
 
         <div class="top-bar-actions">
-          <button id="btnLoadExample" class="btn btn-outline-secondary btn-sm" title="Load sample from image">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            Load Sample
+          <button id="btnLoadExample" class="btn btn-outline-secondary btn-sm" title="Load sample schedule">
+            Sample
           </button>
-          <button id="btnClearSchedule" class="btn btn-outline-danger btn-sm" title="Clear all classes">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <button id="btnClearSchedule" class="btn btn-outline-danger btn-sm" title="Clear schedule">
             Clear
           </button>
         </div>
@@ -231,127 +196,43 @@
         <!-- Left Column: Add Buttons and Class List -->
         <div class="builder-left-col">
 
-          <!-- Add Class Action Cards -->
-          <div class="add-actions-panel">
-            <button id="btnOpenCompulsoryModal" class="btn-add-action compulsory-action">
-              <div class="action-icon compulsory-icon">📘</div>
-              <div class="action-text">
-                <span class="action-title">+ Add Compulsory Class</span>
-                <span class="action-desc">Regular schedule with OFFLINE + ONLINE</span>
-              </div>
-              <span class="action-plus">+</span>
+          <!-- Sleek Minimalist Action Pills Row -->
+          <div class="action-pills-row">
+            <button type="button" id="btnOpenCompulsoryModal" class="btn-action-pill btn-compulsory">
+              <span class="pill-emoji">📘</span>
+              <span class="pill-text">+ Compulsory Class</span>
             </button>
-
-            <button id="btnOpenExtraModal" class="btn-add-action extra-action">
-              <div class="action-icon extra-icon">⭐</div>
-              <div class="action-text">
-                <span class="action-title">+ Add Extra Class</span>
-                <span class="action-desc">Doubt class, specific topics &amp; students</span>
-              </div>
-              <span class="action-plus">+</span>
+            <button type="button" id="btnOpenExtraModal" class="btn-action-pill btn-extra">
+              <span class="pill-emoji">⭐</span>
+              <span class="pill-text">+ Extra Class</span>
             </button>
-
-            <button id="btnOpenTestModal" class="btn-add-action test-action">
-              <div class="action-icon test-icon">📝</div>
-              <div class="action-text">
-                <span class="action-title">+ Add Test</span>
-                <span class="action-desc">Compulsory or Optional test with topics</span>
-              </div>
-              <span class="action-plus">+</span>
+            <button type="button" id="btnOpenTestModal" class="btn-action-pill btn-test">
+              <span class="pill-emoji">📝</span>
+              <span class="pill-text">+ Test</span>
             </button>
           </div>
 
           <!-- Schedule Classes Container -->
-          <div class="classes-container card">
+          <div class="schedule-main-card card">
             
-            <!-- Extra Classes Section -->
-            <div class="section-group" id="extraClassesSection">
-              <div class="section-header">
-                <div class="section-title">
-                  <span class="section-emoji">⭐</span>
-                  <h3>Extra Classes</h3>
-                  <span class="badge count-badge" id="extraCountBadge">0</span>
-                </div>
-                <span class="section-sort-indicator" title="Classes arranged in chronological order">🕒 Chronological</span>
-              </div>
-              
-              <div class="class-list" id="extraClassList">
-                <!-- Dynamic cards populated via JavaScript -->
-              </div>
-              
-              <div class="empty-section-placeholder" id="extraEmptyMsg">
-                <span class="empty-msg-text">No extra classes added yet for this day.</span>
-                <button type="button" class="btn btn-outline-secondary btn-xs empty-quick-add" id="btnEmptyAddExtra">+ Add Extra Class</button>
-              </div>
+            <!-- Single Clean Peaceful Empty State -->
+            <div class="schedule-empty-view" id="scheduleEmptyView">
+              <div class="empty-calendar-icon">📅</div>
+              <h3 class="empty-title">No classes scheduled for <span id="emptyDayTitle">Friday</span></h3>
+              <p class="empty-subtitle">Choose an option above to add a compulsory class, extra class, or test.</p>
             </div>
 
-            <div class="divider-line"></div>
-
-            <!-- Compulsory Classes Section -->
-            <div class="section-group" id="compulsoryClassesSection">
-              <div class="section-header">
-                <div class="section-title">
-                  <span class="section-emoji">📘</span>
-                  <h3>Compulsory Class</h3>
-                  <span class="badge count-badge" id="compulsoryCountBadge">0</span>
-                </div>
-                <span class="section-sort-indicator" title="Classes arranged in chronological order">🕒 Chronological</span>
-              </div>
-              
-              <div class="class-list" id="compulsoryClassList">
-                <!-- Dynamic cards populated via JavaScript -->
-              </div>
-              
-              <div class="empty-section-placeholder" id="compulsoryEmptyMsg">
-                <span class="empty-msg-text">No compulsory classes added yet for this day.</span>
-                <button type="button" class="btn btn-outline-secondary btn-xs empty-quick-add" id="btnEmptyAddCompulsory">+ Add Compulsory Class</button>
-              </div>
+            <!-- Unified Chronological Class List -->
+            <div class="unified-class-list hidden" id="unifiedClassList">
+              <!-- Populated by JavaScript -->
             </div>
 
-            <div class="divider-line"></div>
-
-            <!-- Tests Section -->
-            <div class="section-group" id="testsSection">
-              <div class="section-header">
-                <div class="section-title">
-                  <span class="section-emoji">📝</span>
-                  <h3>Tests</h3>
-                  <span class="badge count-badge" id="testCountBadge">0</span>
-                </div>
-                <span class="section-sort-indicator" title="Tests arranged in chronological order">🕒 Chronological</span>
-              </div>
-              
-              <div class="class-list" id="testList">
-                <!-- Dynamic cards populated via JavaScript -->
-              </div>
-              
-              <div class="empty-section-placeholder" id="testEmptyMsg">
-                <span class="empty-msg-text">No tests scheduled for this day.</span>
-                <button type="button" class="btn btn-outline-secondary btn-xs empty-quick-add" id="btnEmptyAddTest">+ Add Test</button>
-              </div>
-            </div>
-
-            <div class="divider-line"></div>
-
-            <!-- Online Mode Footer Message (Always Included) -->
-            <div class="section-group" id="onlineNoticeSection">
-              <div class="section-header">
-                <div class="section-title">
-                  <span class="section-emoji">📌</span>
-                  <h3>Online Class Notice</h3>
-                  <span class="badge badge-success">Always in Output</span>
-                </div>
-              </div>
-              
-              <div class="online-notice-card">
-                <div class="online-notice-icon">📌</div>
-                <div class="online-notice-content">
-                  <input type="text" id="inputOnlineNoticeText" class="form-input form-input-sm" 
-                    value="If anyone needs to attend class in online mode, link is provided in the description of this group." 
-                    placeholder="Enter online mode notice message..." />
-                  <span class="form-hint">Automatically added at the end of the schedule for WhatsApp.</span>
-                </div>
-              </div>
+            <!-- Sleek Online Notice Row at Bottom -->
+            <div class="online-notice-row">
+              <span class="notice-pin">📌</span>
+              <input type="text" id="inputOnlineNoticeText" class="online-notice-input" 
+                value="If anyone needs to attend class in online mode, link is provided in the description of this group." 
+                placeholder="Enter online mode notice message..." />
             </div>
 
           </div>
@@ -361,17 +242,12 @@
         <div class="builder-right-col">
           <div class="preview-panel card sticky-panel">
             
-            <!-- Mobile Quick Return Button -->
-            <button type="button" class="btn btn-secondary btn-sm mobile-back-to-edit" id="btnMobileBackToEdit">
-              <span>← Back to Schedule Editor</span>
-            </button>
-
             <div class="preview-header">
               <div class="preview-title">
                 <span class="whatsapp-badge-icon">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 </span>
-                <span>WhatsApp Format Preview</span>
+                <span>WhatsApp Preview</span>
               </div>
               
               <div class="view-mode-tabs">
@@ -382,20 +258,15 @@
 
             <!-- WhatsApp Chat Message Simulation -->
             <div class="preview-body" id="whatsappChatContainer">
-              <!-- WhatsApp Simulated App Bar -->
               <div class="wa-simulated-bar">
                 <div class="wa-user-col">
                   <div class="wa-avatar-badge">
                     <span>M4</span>
-                    <span class="wa-live-status"></span>
                   </div>
                   <div class="wa-user-text">
                     <span class="wa-user-name">M4EX Institute Official</span>
-                    <span class="wa-user-sub">online • WhatsApp Group</span>
+                    <span class="wa-user-sub">online • Official Group</span>
                   </div>
-                </div>
-                <div class="wa-sim-icons">
-                  <span class="wa-verified-pill" title="Verified Format">✓ Verified</span>
                 </div>
               </div>
 
@@ -417,24 +288,16 @@
               <textarea id="rawTextOutput" readonly rows="12" spellcheck="false" class="raw-textarea"></textarea>
             </div>
 
-            <!-- Primary Sharing Actions -->
-            <div class="share-actions-group">
-              <button id="btnShareWhatsApp" class="btn btn-whatsapp btn-block btn-lg">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                Share on WhatsApp
+            <!-- Clean Sharing Action Buttons -->
+            <div class="preview-action-row">
+              <button id="btnShareWhatsApp" class="btn btn-whatsapp btn-share-main">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <span>Share on WhatsApp</span>
               </button>
-
-              <div class="secondary-share-row">
-                <button id="btnCopyText" class="btn btn-outline-primary flex-1">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  <span>Copy Text</span>
-                </button>
-
-                <button id="btnDownloadTxt" class="btn btn-outline-secondary flex-1">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  <span>Download</span>
-                </button>
-              </div>
+              <button id="btnCopyText" class="btn btn-outline-primary btn-copy-secondary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>Copy Text</span>
+              </button>
             </div>
 
           </div>
@@ -442,12 +305,12 @@
 
       </div>
 
-      <!-- Mobile Floating Bottom Action Bar (Sticky at bottom on phone) -->
+      <!-- Mobile Floating Bottom Action Bar -->
       <div class="mobile-floating-bar" id="mobileFloatingBar">
         <!-- Edit Mode Content -->
         <div class="mobile-bar-content" id="mobileBarEditContent">
           <div class="mobile-floating-left">
-            <span class="mobile-floating-badge" id="mobileFloatingCount">0 classes added</span>
+            <span class="mobile-floating-badge" id="mobileFloatingCount">0 classes</span>
             <span class="mobile-floating-batch" id="mobileFloatingBatch">12th A2 batch</span>
           </div>
           <button type="button" class="btn btn-whatsapp btn-sm mobile-floating-preview-btn" id="btnFloatingPreview">
@@ -459,16 +322,10 @@
         <!-- Preview Mode Content -->
         <div class="mobile-bar-content mobile-bar-preview hidden" id="mobileBarPreviewContent">
           <button type="button" class="btn btn-secondary btn-sm mobile-floating-back-btn" id="btnFloatingBack">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            <span>Edit</span>
-          </button>
-          <button type="button" class="btn btn-outline-primary btn-sm mobile-floating-copy-btn" id="btnFloatingCopy">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>Copy</span>
+            <span>← Edit</span>
           </button>
           <button type="button" class="btn btn-whatsapp btn-sm mobile-floating-share-btn" id="btnFloatingShare">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            <span>WhatsApp</span>
+            <span>WhatsApp Share</span>
           </button>
         </div>
       </div>
@@ -481,10 +338,13 @@
   <div id="classModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-sheet-handle"></div>
+      
+      <!-- Modal Header with Clean Category Tabs -->
       <div class="modal-header">
-        <div class="modal-title-group">
-          <span class="modal-icon" id="modalTypeEmoji">📘</span>
-          <h2 id="modalTitle">Add Compulsory Class</h2>
+        <div class="modal-type-tabs" id="modalTypeTabs">
+          <button type="button" class="modal-type-btn active" data-type="compulsory">📘 Compulsory</button>
+          <button type="button" class="modal-type-btn" data-type="extra">⭐ Extra Class</button>
+          <button type="button" class="modal-type-btn" data-type="test">📝 Test</button>
         </div>
         <button id="btnCloseModal" class="btn-close" aria-label="Close modal">&times;</button>
       </div>
@@ -493,152 +353,99 @@
         <input type="hidden" id="editClassId" value="" />
         <input type="hidden" id="classCategory" value="compulsory" />
 
-        <!-- 1. Day of the Week -->
-        <div class="form-group">
-          <label for="inputDay" class="form-label">
-            1. Day <span class="required">*</span>
-          </label>
-          <div class="select-wrapper">
-            <select id="inputDay" class="form-select" required>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday" selected>Friday</option>
-              <option value="Saturday">Saturday</option>
-              <option value="Sunday">Sunday</option>
-            </select>
-            <span class="select-arrow">▼</span>
+        <!-- Row: Day & Duration -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="inputDay" class="form-label">Day <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="inputDay" class="form-select" required>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday" selected>Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputDuration" class="form-label">Duration <span class="required">*</span></label>
+            <input type="text" id="inputDuration" class="form-input" placeholder="e.g. 4.00-5:10PM" required />
           </div>
         </div>
 
-        <!-- 2. Duration -->
-        <div class="form-group">
-          <label for="inputDuration" class="form-label">
-            2. Duration <span class="required">*</span>
-            <span class="form-hint">Type duration as seen in schedule (e.g. 4.00-5:10PM, 1–2 PM)</span>
-          </label>
-          <input type="text" id="inputDuration" class="form-input" placeholder="e.g. 4.00-5:10PM or 1–2 PM" required />
-          
-          <!-- Quick Duration Presets for convenience -->
-          <div class="quick-chips-row">
-            <span class="chips-label">Quick presets:</span>
-            <button type="button" class="chip-btn" data-time="1–2 PM">1–2 PM</button>
-            <button type="button" class="chip-btn" data-time="2–4 PM">2–4 PM</button>
-            <button type="button" class="chip-btn" data-time="4–5 PM">4–5 PM</button>
-            <button type="button" class="chip-btn" data-time="4.00-5:10PM">4.00-5:10PM</button>
-            <button type="button" class="chip-btn" data-time="5:15-7.00PM">5:15-7.00PM</button>
-            <button type="button" class="chip-btn" data-time="7.00-8.00PM">7.00-8.00PM</button>
-          </div>
+        <!-- 1 Clean Row of Essential Duration Presets -->
+        <div class="duration-presets-row">
+          <span class="preset-label">Presets:</span>
+          <button type="button" class="preset-chip" data-time="1–2 PM">1–2 PM</button>
+          <button type="button" class="preset-chip" data-time="4–5 PM">4–5 PM</button>
+          <button type="button" class="preset-chip" data-time="4.00-5:10PM">4.00-5:10PM</button>
+          <button type="button" class="preset-chip" data-time="5:15-7.00PM">5:15-7.00PM</button>
         </div>
 
-        <!-- 3. Subject -->
-        <div class="form-group">
-          <label for="inputSubject" class="form-label">
-            3. Subject <span class="required">*</span>
-          </label>
-          <div class="quick-chips-row" id="subjectChipsRow">
-            <span class="chips-label">Quick select:</span>
-            <button type="button" class="chip-btn chip-subject" data-subject="Maths">Maths</button>
-            <button type="button" class="chip-btn chip-subject" data-subject="Physics">Physics</button>
-            <button type="button" class="chip-btn chip-subject" data-subject="Chemistry">Chemistry</button>
-            <button type="button" class="chip-btn chip-subject" data-subject="Biology">Biology</button>
-          </div>
-          <div class="select-wrapper">
-            <select id="inputSubject" class="form-select" required>
-              <option value="Physics">Physics</option>
-              <option value="Chemistry">Chemistry</option>
-              <option value="Maths" selected>Maths</option>
-              <option value="Biology">Biology</option>
-              <option value="custom">Custom (Type below)...</option>
-            </select>
-            <span class="select-arrow">▼</span>
+        <!-- Row: Subject & Teacher -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="inputSubject" class="form-label">Subject <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="inputSubject" class="form-select" required>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Maths" selected>Maths</option>
+                <option value="Biology">Biology</option>
+                <option value="custom">Custom Subject...</option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+            <div id="customSubjectWrapper" class="mt-2 hidden">
+              <input type="text" id="inputCustomSubject" class="form-input" placeholder="Type custom subject" />
+            </div>
           </div>
 
-          <div id="customSubjectWrapper" class="mt-2 hidden">
-            <input type="text" id="inputCustomSubject" class="form-input" placeholder="Type custom subject name (e.g. English, Accounts)" />
-          </div>
-        </div>
-
-        <!-- 4. Teacher's Name -->
-        <div class="form-group" id="teacherGroup">
-          <label for="inputTeacher" class="form-label">
-            4. Teacher's Name <span class="required">*</span>
-          </label>
-          <div class="quick-chips-row" id="teacherChipsRow">
-            <span class="chips-label">Quick select:</span>
-            <button type="button" class="chip-btn chip-teacher" data-teacher="Nitin Sir">Nitin Sir</button>
-            <button type="button" class="chip-btn chip-teacher" data-teacher="Neelam Ma'am">Neelam Ma'am</button>
-            <button type="button" class="chip-btn chip-teacher" data-teacher="Ankit Sir">Ankit Sir</button>
-            <button type="button" class="chip-btn chip-teacher" data-teacher="Sumit Sir">Sumit Sir</button>
-            <button type="button" class="chip-btn chip-teacher" data-teacher="Shweta Mam">Shweta Mam</button>
-            <button type="button" class="chip-btn chip-teacher" data-teacher="Abhijit Sir">Abhijit Sir</button>
-          </div>
-          <div class="select-wrapper">
-            <select id="inputTeacher" class="form-select" required>
-              <option value="Nitin Sir" selected>Nitin Sir</option>
-              <option value="Neelam Ma'am">Neelam Ma'am</option>
-              <option value="Ankit Sir">Ankit Sir</option>
-              <option value="Shweta Mam">Shweta Mam</option>
-              <option value="Sumit Sir">Sumit Sir</option>
-              <option value="Abhijit Sir">Abhijit Sir</option>
-              <option value="custom">Custom Teacher...</option>
-            </select>
-            <span class="select-arrow">▼</span>
-          </div>
-
-          <div id="customTeacherWrapper" class="mt-2 hidden">
-            <input type="text" id="inputCustomTeacher" class="form-input" placeholder="Type teacher's name" />
+          <div class="form-group" id="teacherGroup">
+            <label for="inputTeacher" class="form-label">Teacher <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="inputTeacher" class="form-select" required>
+                <option value="Nitin Sir" selected>Nitin Sir</option>
+                <option value="Neelam Ma'am">Neelam Ma'am</option>
+                <option value="Ankit Sir">Ankit Sir</option>
+                <option value="Shweta Mam">Shweta Mam</option>
+                <option value="Sumit Sir">Sumit Sir</option>
+                <option value="Abhijit Sir">Abhijit Sir</option>
+                <option value="custom">Custom Teacher...</option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+            <div id="customTeacherWrapper" class="mt-2 hidden">
+              <input type="text" id="inputCustomTeacher" class="form-input" placeholder="Type teacher's name" />
+            </div>
           </div>
         </div>
 
         <!-- EXTRA CLASS SPECIFIC FIELDS -->
         <div id="extraFieldsContainer" class="extra-fields-section hidden">
-          <div class="extra-fields-header">
-            <span>Extra Class Details</span>
+          <div class="form-group">
+            <label for="inputTopic" class="form-label">Topic Name <span class="required">*</span></label>
+            <input type="text" id="inputTopic" class="form-input" placeholder="e.g. Doubt Class or Electrochemistry" />
           </div>
 
-          <!-- 5. Topic Name -->
           <div class="form-group">
-            <label for="inputTopic" class="form-label">
-              5. Topic Name <span class="required">*</span>
-              <span class="form-hint">e.g. Doubt Class, Electrochemistry Doubt Class, Wave Optics Class</span>
-            </label>
-            <input type="text" id="inputTopic" class="form-input" placeholder="e.g. Doubt Class or Electrochemistry Doubt Class" />
-            
-            <div class="quick-chips-row">
-              <span class="chips-label">Quick topics:</span>
-              <button type="button" class="chip-btn chip-topic" data-topic="Doubt Class">Doubt Class</button>
-              <button type="button" class="chip-btn chip-topic" data-topic="Electrochemistry Doubt Class">Electrochemistry Doubt Class</button>
-              <button type="button" class="chip-btn chip-topic" data-topic="Wave Optics Class">Wave Optics Class</button>
-              <button type="button" class="chip-btn chip-topic" data-topic="Revision Class">Revision Class</button>
-            </div>
+            <label for="inputCompulsoryFor" class="form-label">Compulsory for Student(s) <span class="required">*</span></label>
+            <input type="text" id="inputCompulsoryFor" class="form-input" placeholder="e.g. Parth or Adhiraj, Khushi" />
           </div>
 
-          <!-- 6. Compulsory For (Student Names) -->
           <div class="form-group">
-            <label for="inputCompulsoryFor" class="form-label">
-              6. Compulsory for <span class="required">*</span>
-              <span class="form-hint">Type name(s) of students (e.g. Parth, Adhiraj, Khushi)</span>
-            </label>
-            <input type="text" id="inputCompulsoryFor" class="form-input" placeholder="e.g. Parth or Adhiraj or Khushi" />
-          </div>
-
-          <!-- Extra Class Attendance Mode & Welcoming note -->
-          <div class="form-group">
-            <label class="form-label">Attendance Label Style</label>
             <div class="radio-cards-row">
               <label class="radio-card">
                 <input type="radio" name="attendanceStyle" value="compulsory_welcome" checked />
-                <span class="radio-text">
-                  <strong>(Compulsory for &lt;Student&gt;) Others are also welcome.</strong>
-                </span>
+                <span>(Compulsory for &lt;Student&gt;) Others are also welcome.</span>
               </label>
               <label class="radio-card">
                 <input type="radio" name="attendanceStyle" value="for_only" />
-                <span class="radio-text">
-                  <strong>(For &lt;Student&gt;)</strong>
-                </span>
+                <span>(For &lt;Student&gt;)</span>
               </label>
             </div>
           </div>
@@ -646,53 +453,19 @@
 
         <!-- TEST SPECIFIC FIELDS -->
         <div id="testFieldsContainer" class="extra-fields-section hidden">
-          <div class="extra-fields-header test-header">
-            <span>Test Details</span>
-          </div>
-
-          <!-- 4. Topic (optional) -->
           <div class="form-group">
-            <label for="inputTestTopic" class="form-label">
-              4. Topic <span class="optional-badge">(Optional)</span>
-              <span class="form-hint">Type topic or multiple topics separated by commas (e.g. AoI, Differential eq, LPP)</span>
-            </label>
+            <label for="inputTestTopic" class="form-label">Test Topics <span class="optional-badge">(Optional)</span></label>
             <input type="text" id="inputTestTopic" class="form-input" placeholder="e.g. AoI, Differential eq, LPP" />
-            
-            <div class="quick-chips-row">
-              <span class="chips-label">Sample topics:</span>
-              <button type="button" class="chip-btn chip-test-topic" data-topic="AoI, Differential eq, LPP">AoI, Differential eq, LPP</button>
-              <button type="button" class="chip-btn chip-test-topic" data-topic="Differential eq">Differential eq</button>
-              <button type="button" class="chip-btn chip-test-topic" data-topic="Electrochemistry">Electrochemistry</button>
-              <button type="button" class="chip-btn chip-test-topic" data-topic="Full Syllabus">Full Syllabus</button>
-            </div>
           </div>
 
-          <!-- 5. Optional test checklist -->
           <div class="form-group">
-            <label class="form-label">5. Optional Test (Checklist)</label>
             <label class="checkbox-card">
               <input type="checkbox" id="inputIsOptionalTest" />
               <div class="checkbox-card-content">
-                <span class="checkbox-title">Mark as Optional Test</span>
-                <span class="checkbox-subtitle">If <strong>unchecked</strong>, this will be scheduled as a <strong>Compulsory Test</strong> with the required attendance &amp; exam mode guidelines.</span>
+                <span class="checkbox-title">Optional Test</span>
+                <span class="checkbox-subtitle">Unchecked = Compulsory Test with official attendance guidelines</span>
               </div>
             </label>
-          </div>
-        </div>
-
-        <!-- COMPULSORY CLASS NOTE BANNER -->
-        <div id="compulsoryNoteBanner" class="info-banner">
-          <span class="banner-icon">ℹ️</span>
-          <div>
-            <strong>Mode:</strong> <code>(OFFLINE + ONLINE)</code> will be automatically included in the text as standard.
-          </div>
-        </div>
-
-        <!-- TEST NOTE BANNER -->
-        <div id="testNoteBanner" class="info-banner test-info-banner hidden">
-          <span class="banner-icon">📋</span>
-          <div>
-            <strong>Compulsory Tests:</strong> Official exam response guidelines &amp; Ashwini Ma'am contact notice will be automatically included.
           </div>
         </div>
 
